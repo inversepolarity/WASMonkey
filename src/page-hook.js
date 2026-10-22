@@ -100,7 +100,18 @@
     var rest = Array.prototype.slice.call(arguments, 2);
     // Fast path: no hooks and quiet logging -> pass through without reading bytes.
     if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
-      return orig.instantiate.apply(WebAssembly, [source, imports].concat(rest));
+      var _r = await orig.instantiate.apply(WebAssembly, [source, imports].concat(rest));
+      try {
+        var _inst = _r && _r.instance ? _r.instance : _r;
+        (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({
+          byteLength: 0,
+          url: location.href,
+          exports: _inst && _inst.exports ? Object.keys(_inst.exports) : null,
+          memorySize: null,
+          tableSize: null,
+        });
+      } catch (e) {}
+      return _r;
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
@@ -161,7 +172,18 @@
   WebAssembly.instantiateStreaming = async function (source, imports) {
     var rest = Array.prototype.slice.call(arguments, 2);
     if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
-      return orig.instantiateStreaming.apply(WebAssembly, [source, imports].concat(rest));
+      var _r2 = await orig.instantiateStreaming.apply(WebAssembly, [source, imports].concat(rest));
+      try {
+        var _inst2 = _r2 && _r2.instance ? _r2.instance : _r2;
+        (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({
+          byteLength: 0,
+          url: location.href,
+          exports: _inst2 && _inst2.exports ? Object.keys(_inst2.exports) : null,
+          memorySize: null,
+          tableSize: null,
+        });
+      } catch (e) {}
+      return _r2;
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
@@ -193,13 +215,33 @@
         }
       } catch (e) {}
     }
+    // track module for popup/inspector
+    try {
+      var memSize = null, tableSize = null;
+      try {
+        var inst = result && result.instance ? result.instance : result;
+        if (inst && inst.exports) {
+          if (inst.exports.memory && inst.exports.memory.buffer) memSize = inst.exports.memory.buffer.byteLength;
+          if (inst.exports.__indirect_function_table && inst.exports.__indirect_function_table.length != null) tableSize = inst.exports.__indirect_function_table.length;
+        }
+      } catch (e) {}
+      (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({
+        byteLength: bytes ? bytes.byteLength : 0,
+        url: url || location.href,
+        exports: inst && inst.exports ? Object.keys(inst.exports) : null,
+        memorySize: memSize,
+        tableSize: tableSize,
+      });
+    } catch (e) {}
     return result;
   };
 
   WebAssembly.compile = async function (source) {
     var rest = Array.prototype.slice.call(arguments, 1);
     if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
-      return orig.compile.apply(WebAssembly, [source].concat(rest));
+      var _cfast = await orig.compile.apply(WebAssembly, [source].concat(rest));
+      try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: 0, url: location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
+      return _cfast;
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
@@ -214,12 +256,15 @@
       if (useBytes) log("compile", patched, url + " (patched)");
     }
     try {
-      if (useBytes) return await orig.compile(patched);
-      return await orig.compile(source);
+      var _cr;
+      if (useBytes) _cr = await orig.compile(patched);
+      else _cr = await orig.compile(source);
+      try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: bytes ? bytes.byteLength : 0, url: url || location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
+      return _cr;
     } catch (e) {
       recordError("compile", e);
       if (useBytes) {
-        try { return await orig.compile(source); } catch (e2) { recordError("compile-fallback", e2); throw e2; }
+        try { var _cr2 = await orig.compile(source); try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: bytes ? bytes.byteLength : 0, url: url || location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {} return _cr2; } catch (e2) { recordError("compile-fallback", e2); throw e2; }
       }
       throw e;
     }
@@ -228,7 +273,9 @@
   WebAssembly.compileStreaming = async function (source) {
     var rest = Array.prototype.slice.call(arguments, 1);
     if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
-      return orig.compileStreaming.apply(WebAssembly, [source].concat(rest));
+      var _csfast = await orig.compileStreaming.apply(WebAssembly, [source].concat(rest));
+      try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: 0, url: location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
+      return _csfast;
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
@@ -243,12 +290,15 @@
       if (useBytes) { log("compileStreaming", patched, url + " (patched)"); }
     }
     try {
-      if (useBytes) return await orig.compile(patched);
-      return await orig.compileStreaming(source);
+      var _cs;
+      if (useBytes) _cs = await orig.compile(patched);
+      else _cs = await orig.compileStreaming(source);
+      try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: bytes ? bytes.byteLength : 0, url: url || location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
+      return _cs;
     } catch (e) {
       recordError("compileStreaming", e);
       if (useBytes) {
-        try { return await orig.compileStreaming(source); } catch (e2) { recordError("compileStreaming-fallback", e2); throw e2; }
+        try { var _cs2 = await orig.compileStreaming(source); try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: bytes ? bytes.byteLength : 0, url: url || location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {} return _cs2; } catch (e2) { recordError("compileStreaming-fallback", e2); throw e2; }
       }
       throw e;
     }
@@ -274,13 +324,15 @@
           }
           if (hooked && patched && patched !== b) {
             log("Module ctor", patched, u + " (patched)");
-            try { return new orig.Module(patched); }
-            catch (e) { recordError("Module ctor", e); try { return new orig.Module(b); } catch (e2) { recordError("Module ctor-fallback", e2); throw e2; } }
+            try { var _mp = new orig.Module(patched); try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: patched ? patched.byteLength : 0, url: u || location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {} return _mp; }
+            catch (e) { recordError("Module ctor", e); try { var _mb = new orig.Module(b); try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: b ? b.byteLength : 0, url: u || location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {} return _mb; } catch (e2) { recordError("Module ctor-fallback", e2); throw e2; } }
           }
         }
       }
     } catch (e) {}
-    return new orig.Module(...args);
+    var _mfinal = new orig.Module(...args);
+    try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: (typeof b !== "undefined" && b) ? b.byteLength : 0, url: (typeof u !== "undefined" && u) ? u : location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
+    return _mfinal;
   }
   ModuleWrapper.prototype = orig.Module.prototype;
   Object.keys(orig.Module).forEach(function (k) {
@@ -514,9 +566,10 @@
       currentGrants = script.grants || [];
       var api = makeWASMonkeyAPI(script);
       window.WASMonkey = api;
+      window.wasMonkey = api;
       try {
-        var fn = new Function("WASMonkey", script.code || "");
-        fn(api);
+        var fn = new Function("WASMonkey, wasMonkey", script.code || "");
+        fn(api, api);
       } catch (e) {
         console.error("[WASMonkey] script '" + (script.name || script.id) + "' threw:", e);
       }

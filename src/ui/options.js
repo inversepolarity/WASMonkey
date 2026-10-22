@@ -135,7 +135,15 @@ function saveScript(reload) {
       renderList();
       showView("scripts");
       if (reload) {
-        window.location.reload();
+        chrome.tabs.query({ url: ["http://*/*", "https://*/*"] }, (tabs) => {
+          const target = (tabs && tabs.length) ? tabs[tabs.length - 1] : null;
+          if (target) { chrome.tabs.reload(target.id); return; }
+          chrome.tabs.query({ active: true, currentWindow: true }, (t2) => {
+            if (t2 && t2[0] && !/^chrome-extension:|^about:|^moz-extension:/i.test(t2[0].url || "")) {
+              chrome.tabs.reload(t2[0].id);
+            }
+          });
+        });
       }
     });
   });
@@ -262,11 +270,9 @@ $("clear-storage").addEventListener("click", () => {
 // Init editor
 editor = new EditorView({
   doc: DEFAULT_CODE,
-  extensions: [basicSetup, javascript()],
+  extensions: [basicSetup, javascript(), EditorView.updateListener.of((update) => { if (update.docChanged) updateChecksum(); })],
   parent: $("editor"),
 });
-
-editor.on("change", updateChecksum);
 updateChecksum();
 
 // Phase 8: WASM -> WAT viewer
