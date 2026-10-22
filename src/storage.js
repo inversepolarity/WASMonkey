@@ -12,6 +12,21 @@
 
   function now() { return Date.now(); }
 
+  // Grants live in the script record *and* in the code's `// @grant` header.
+  // Records whose stored list is missing/empty (older builds, hand-edited JSON,
+  // header-only declarations) must still honour the header at runtime.
+  function mergeGrants() {
+    var out = [];
+    for (var i = 0; i < arguments.length; i++) {
+      var list = arguments[i];
+      if (!list) continue;
+      if (typeof list === "string") list = list.split(/[\s|,]+/);
+      if (!Array.isArray(list)) continue;
+      list.forEach(function (g) { if (g && out.indexOf(g) < 0) out.push(g); });
+    }
+    return out;
+  }
+
   function getScripts(cb) {
     try {
       chrome.storage.local.get({ scripts: [] }, function (res) {
@@ -43,7 +58,7 @@
         exclude: script.exclude || meta.exclude,
         code: script.code || "",
         enabled: script.enabled !== false,
-        grants: script.grants || meta.grants,
+        grants: mergeGrants(script.grants, meta.grants),
         runAt: script.runAt || meta.runAt,
         version: script.version || meta.version,
         createdAt: script.createdAt || now(),
@@ -71,12 +86,12 @@
           if (!patch.name) s.name = meta.name;
           if (!patch.match) s.match = meta.match;
           if (!patch.exclude) s.exclude = meta.exclude;
-          if (!patch.grants) s.grants = meta.grants;
+          s.grants = mergeGrants(s.grants, meta.grants);
           if (!patch.runAt) s.runAt = meta.runAt;
         }
       }
       if (patch.enabled != null) s.enabled = patch.enabled;
-      if (patch.grants != null) s.grants = patch.grants;
+      if (patch.grants != null) s.grants = mergeGrants(patch.grants, s.grants);
       if (patch.runAt != null) s.runAt = patch.runAt;
       if (patch.version != null) s.version = patch.version;
       s.updatedAt = now();
@@ -134,7 +149,7 @@
           exclude: s.exclude || meta.exclude || [],
           code: s.code || "",
           enabled: s.enabled !== false,
-          grants: s.grants || meta.grants || [],
+          grants: mergeGrants(s.grants, meta.grants),
           runAt: s.runAt || meta.runAt || "document-start",
           version: s.version || meta.version || null,
           createdAt: s.createdAt || now(),

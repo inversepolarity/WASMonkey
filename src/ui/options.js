@@ -94,6 +94,27 @@ async function updateChecksum() {
   } catch (e) {}
 }
 
+// Grants can be declared either in the editor's grant field or in the script's
+// `// @grant` header lines (the way Tampermonkey users expect). Save the union
+// so a header-only grant is not silently lost.
+function headerGrants(code) {
+  const out = [];
+  const re = /^[ \t]*\/\/[ \t]*@grant[ \t]+(.+)$/gm;
+  let m;
+  while ((m = re.exec(code || "")) !== null) {
+    String(m[1]).trim().split(/[\s|,]+/).forEach((g) => {
+      if (g && !out.includes(g)) out.push(g);
+    });
+  }
+  return out;
+}
+
+function mergeGrants(fieldGrants, code) {
+  const out = [...(fieldGrants || [])];
+  headerGrants(code).forEach((g) => { if (!out.includes(g)) out.push(g); });
+  return out;
+}
+
 function collectMeta() {
   return {
     name: $("meta-name").value.trim() || "Untitled script",
@@ -106,6 +127,7 @@ function collectMeta() {
 
 function saveScript(reload) {
   const meta = collectMeta();
+  meta.grants = mergeGrants(meta.grants, meta.code);
   getScripts((scripts) => {
     if (currentId) {
       const s = scripts.find(x => x.id === currentId);

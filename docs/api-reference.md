@@ -7,11 +7,35 @@ same surface for tooling.
 ## Grants (@grant)
 
 Declare required capabilities in the metadata header. A script without the
-relevant grant cannot register the corresponding hook.
+relevant grant cannot register the corresponding hook. Grants from the header
+and from the stored script record (the editor's grant field) are merged, so a
+header-only `// @grant patchBytes` is always honoured.
 
 - `patchBytes` — required for `onBeforeInstantiate`.
 - `patchExports` — required for `onAfterInstantiate` (also granted by `patchBytes`).
 - `network` — reserved for network access (future).
+
+## Delivery & startup
+
+Scripts are serialized by the isolated-world bridge and handed to the page on
+the `WASMonkey:scripts` document event. Delivery is race-free across browsers:
+the bridge pushes the matching scripts as soon as it starts (and again on
+`DOMContentLoaded`, `load`, `pageshow`, and whenever the script store changes),
+while the page side re-requests with backoff until it has an answer.
+
+- The first async `WebAssembly.instantiate`, `instantiateStreaming`, `compile`
+  or `compileStreaming` call waits up to `startupGraceMs` (default `300`, set it
+  in `chrome.storage.local`; `0` disables) for the payload, so a module loaded
+  at `document_start` can still be patched by `onBeforeInstantiate`.
+- `onAfterInstantiate` is replayed for instances created before the scripts
+  arrived (up to 8 of them). Those calls carry `ctx.replayed === true`.
+- Re-delivery is idempotent: a script body runs once per stored revision
+  (`id` + `updatedAt`), so re-pushes and storage changes never double-register
+  hooks.
+- `__WASMonkeyRefreshScripts()` re-syncs manually from the console.
+- If no payload arrives at all, the console warns
+  `[WASMonkey] no script payload received from the isolated bridge…` instead of
+  failing silently.
 
 ## Interface
 
