@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>wasMonkey harness</title></head>
+<body>
+<h1>harness</h1>
+<script>
+window.__harnessErrors = [];
+window.onerror = (m) => { window.__harnessErrors.push(String(m)); return false; };
+window.addEventListener("unhandledrejection", (e) => { window.__harnessErrors.push("rej: " + (e.reason && e.reason.message || e.reason)); });
+
+function post(payload){ try { fetch("/collect", {method:"POST", body: JSON.stringify(payload)}); } catch(e){} }
+
+post({stage:"load", hookInstalled: !!window.__wasMonkeyInstalled, ua: navigator.userAgent});
+
+(async () => {
+  try {
+    const url = "/test/sample.wasm";
+    const r = await fetch(url);
+    const buf = await r.arrayBuffer();
+
+    await WebAssembly.compile(buf);
+    const { instance } = await WebAssembly.instantiate(buf, {});
+    const r2 = fetch(url);
+    await WebAssembly.instantiateStreaming(r2, {});
+    await WebAssembly.compileStreaming(fetch(url));
+    const m = new WebAssembly.Module(buf);
+    new WebAssembly.Instance(m, {});
+
+    // module overload of instantiate
+    await WebAssembly.instantiate(m, {});
+
+    post({stage:"done", hookInstalled: !!window.__wasMonkeyInstalled, logs: window.__wasMonkeyLogs || [], errors: window.__harnessErrors});
+  } catch (e) {
+    post({stage:"error", message: String(e && e.message || e), stack: e && e.stack, hookInstalled: !!window.__wasMonkeyInstalled, logs: window.__wasMonkeyLogs || [], errors: window.__harnessErrors});
+  }
+})();
+
+setTimeout(() => {
+  post({stage:"timeout", hookInstalled: !!window.__wasMonkeyInstalled, logs: window.__wasMonkeyLogs || [], errors: window.__harnessErrors});
+}, 4000);
+</script>
+</body></html>
