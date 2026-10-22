@@ -24,11 +24,11 @@
   }
 
   function injectPageHook() {
-    // Idempotent: page-hook.js guards on window.__wasMonkeyInstalled.
+    // Idempotent: page-hook.js guards on window.__WASMonkeyInstalled.
     return injectScriptTag("src/page-hook.js");
   }
 
   var api = { supportsMainWorld: supportsMainWorld, injectScriptTag: injectScriptTag, injectPageHook: injectPageHook };
-  try { window.wasMonkeyInject = api; } catch (e) {}
-  try { if (typeof globalThis !== "undefined") globalThis.wasMonkeyInject = api; } catch (e) {}
+  try { window.WASMonkeyInject = api; } catch (e) {}
+  try { if (typeof globalThis !== "undefined") globalThis.WASMonkeyInject = api; } catch (e) {}
 })();

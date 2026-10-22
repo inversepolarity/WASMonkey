@@ -6,7 +6,7 @@
  * vendor.mjs, checksum-pinned in vendor.lock.json) are loaded into the MAIN
  * world of live pages under each CSP profile, and each toolkit runs a real
  * parse → emit → instantiate roundtrip. The hook's lazy-load contract
- * (window.__wasMonkey.getBinaryen()/getWabt(), docs §7.6) is exercised too.
+ * (window.__WASMonkey.getBinaryen()/getWabt(), docs §7.6) is exercised too.
  *
  * Usage: node spike.mjs [--mode auto|extension|cdp-inject] [--only p1,p2]
  *                       [--out test/results/toolkit-spike.json]
@@ -70,7 +70,7 @@ for (const profile of profiles) {
 
   const steps = payload.steps || [];
   const stepOk = Object.fromEntries(steps.map((s) => [s.step, s.ok]));
-  const wmLines = cap.wasMonkeyLines();
+  const wmLines = cap.WASMonkeyLines();
   const rec = {
     profile,
     kind: SITE_PROFILES[profile]?.kind || "local",
@@ -84,7 +84,7 @@ for (const profile of profiles) {
     hookInstalled: !!payload.hookInstalled,
     steps,
     stepOk,
-    wasMonkeyConsoleLines: wmLines.length,
+    WASMonkeyConsoleLines: wmLines.length,
     consoleParity: consoleParity(payload.logs, wmLines),
     cspViolations: cap.security.slice(0, 12),
     pageErrors: cap.pageErrors.slice(0, 8),

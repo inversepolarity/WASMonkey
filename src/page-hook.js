@@ -1,34 +1,34 @@
 (function () {
   "use strict";
-  if (window.__wasMonkeyInstalled) return;
-  window.__wasMonkeyInstalled = true;
-  window.__wasMonkeyDisabled = false;
-  window.__wasMonkeyErrors = window.__wasMonkeyErrors || [];
-  window.__wasMonkeyExtBaseURL = window.__wasMonkeyExtBaseURL || null;
-  window.__wasMonkeyWorkerHookURL = window.__wasMonkeyWorkerHookURL || null;
+  if (window.__WASMonkeyInstalled) return;
+  window.__WASMonkeyInstalled = true;
+  window.__WASMonkeyDisabled = false;
+  window.__WASMonkeyErrors = window.__WASMonkeyErrors || [];
+  window.__WASMonkeyExtBaseURL = window.__WASMonkeyExtBaseURL || null;
+  window.__WASMonkeyWorkerHookURL = window.__WASMonkeyWorkerHookURL || null;
   function recordError(where, err) {
     try {
-      var msg = "[wasMonkey] " + where + ": " + (err && err.message ? err.message : String(err));
-      window.__wasMonkeyErrors.push({ where: where, message: msg, time: Date.now() });
+      var msg = "[WASMonkey] " + where + ": " + (err && err.message ? err.message : String(err));
+      window.__WASMonkeyErrors.push({ where: where, message: msg, time: Date.now() });
       console.error(msg);
       // CSP-specific hint
       if (/Content Security Policy|wasm-unsafe-eval|CompileError/i.test(msg)) {
-        console.warn("[wasMonkey] CSP may be blocking re-instantiation of patched bytes. Enable CSP relaxation in settings or reduce patching.");
+        console.warn("[WASMonkey] CSP may be blocking re-instantiation of patched bytes. Enable CSP relaxation in settings or reduce patching.");
       }
     } catch (e) {}
   }
 
-  document.addEventListener("wasmonkey:ext-base", function (ev) {
+  document.addEventListener("WASMonkey:ext-base", function (ev) {
     try {
       var d = JSON.parse((ev && ev.detail) || "{}");
-      if (d.extBaseURL) window.__wasMonkeyExtBaseURL = d.extBaseURL;
-      if (d.workerHookURL) window.__wasMonkeyWorkerHookURL = d.workerHookURL;
+      if (d.extBaseURL) window.__WASMonkeyExtBaseURL = d.extBaseURL;
+      if (d.workerHookURL) window.__WASMonkeyWorkerHookURL = d.workerHookURL;
     } catch (e) {}
   });
-  var TAG = "[wasMonkey]";
+  var TAG = "[WASMonkey]";
   // Cross-world (isolated bridge) control + script delivery channel.
   try {
-    document.addEventListener("wasmonkey:disable", function () { window.__wasMonkeyDisabled = true; });
+    document.addEventListener("WASMonkey:disable", function () { window.__WASMonkeyDisabled = true; });
   } catch (e) {}
 
   var orig = {
@@ -53,17 +53,17 @@
   }
 
   function log(kind, bytes, sourceUrl) {
-    if (window.__wasMonkeyDisabled) return;
+    if (window.__WASMonkeyDisabled) return;
     try {
       var msg = TAG + " " + kind + ": " + (bytes ? bytes.byteLength : "?") + " bytes" +
         (sourceUrl ? " (" + sourceUrl + ")" : "") +
         " | page: " + location.href;
-      (window.__wasMonkeyLogs = window.__wasMonkeyLogs || []).push(msg);
+      (window.__WASMonkeyLogs = window.__WASMonkeyLogs || []).push(msg);
       console.log(msg);
-      if (window.__wasMonkeyRecordMode && bytes) {
+      if (window.__WASMonkeyRecordMode && bytes) {
         (async () => {
           try {
-            var h = await window.__wasMonkey.hashBytes(bytes);
+            var h = await window.__WASMonkey.hashBytes(bytes);
             console.log(TAG + " hash: " + h);
           } catch (e) {}
         })();
@@ -99,7 +99,7 @@
   WebAssembly.instantiate = async function (source, imports) {
     var rest = Array.prototype.slice.call(arguments, 2);
     // Fast path: no hooks and quiet logging -> pass through without reading bytes.
-    if (!beforeHooks.length && !afterHooks.length && window.__wasMonkeyLogVerbosity === "quiet") {
+    if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
       return orig.instantiate.apply(WebAssembly, [source, imports].concat(rest));
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
@@ -138,7 +138,7 @@
           if (result.instance.exports.__indirect_function_table && result.instance.exports.__indirect_function_table.length != null) tableSize = result.instance.exports.__indirect_function_table.length;
         }
       } catch (e) {}
-      (window.__wasMonkeyModules = window.__wasMonkeyModules || []).push({
+      (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({
         byteLength: (useBytes ? patched : bytes) ? (useBytes ? patched : bytes).byteLength : 0,
         url: url || location.href,
         exports: result && result.instance ? Object.keys(result.instance.exports) : null,
@@ -151,7 +151,7 @@
       try {
         var exportsObj = result && result.instance ? result.instance.exports : (result && result.exports ? result.exports : result);
         for (var j = 0; j < afterHooks.length; j++) {
-          try { afterHooks[j](exportsObj, ctx); } catch (e) { console.error("[wasMonkey] onAfterInstantiate threw:", e); }
+          try { afterHooks[j](exportsObj, ctx); } catch (e) { console.error("[WASMonkey] onAfterInstantiate threw:", e); }
         }
       } catch (e) {}
     }
@@ -160,7 +160,7 @@
 
   WebAssembly.instantiateStreaming = async function (source, imports) {
     var rest = Array.prototype.slice.call(arguments, 2);
-    if (!beforeHooks.length && !afterHooks.length && window.__wasMonkeyLogVerbosity === "quiet") {
+    if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
       return orig.instantiateStreaming.apply(WebAssembly, [source, imports].concat(rest));
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
@@ -189,7 +189,7 @@
       try {
         var exportsObj = result && result.instance ? result.instance.exports : (result && result.exports ? result.exports : result);
         for (var j = 0; j < afterHooks.length; j++) {
-          try { afterHooks[j](exportsObj, ctx); } catch (e) { console.error("[wasMonkey] onAfterInstantiate threw:", e); }
+          try { afterHooks[j](exportsObj, ctx); } catch (e) { console.error("[WASMonkey] onAfterInstantiate threw:", e); }
         }
       } catch (e) {}
     }
@@ -198,7 +198,7 @@
 
   WebAssembly.compile = async function (source) {
     var rest = Array.prototype.slice.call(arguments, 1);
-    if (!beforeHooks.length && !afterHooks.length && window.__wasMonkeyLogVerbosity === "quiet") {
+    if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
       return orig.compile.apply(WebAssembly, [source].concat(rest));
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
@@ -227,7 +227,7 @@
 
   WebAssembly.compileStreaming = async function (source) {
     var rest = Array.prototype.slice.call(arguments, 1);
-    if (!beforeHooks.length && !afterHooks.length && window.__wasMonkeyLogVerbosity === "quiet") {
+    if (!beforeHooks.length && !afterHooks.length && window.__WASMonkeyLogVerbosity === "quiet") {
       return orig.compileStreaming.apply(WebAssembly, [source].concat(rest));
     }
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
@@ -270,7 +270,7 @@
               // sync hook call (hooks may be async; fire-and-forget here)
               var res = beforeHooks[i](patched, ctx);
               if (res instanceof Uint8Array) { patched = res; hooked = true; }
-            } catch (e) { console.error("[wasMonkey] onBeforeInstantiate threw:", e); }
+            } catch (e) { console.error("[WASMonkey] onBeforeInstantiate threw:", e); }
           }
           if (hooked && patched && patched !== b) {
             log("Module ctor", patched, u + " (patched)");
@@ -296,7 +296,7 @@
       try {
         var ctx = { url: location.href, initiatorStack: null, byteLength: 0, frameUrl: location.href };
         for (var i = 0; i < afterHooks.length; i++) {
-          try { afterHooks[i](instance.exports, ctx); } catch (e) { console.error("[wasMonkey] onAfterInstantiate threw:", e); }
+          try { afterHooks[i](instance.exports, ctx); } catch (e) { console.error("[WASMonkey] onAfterInstantiate threw:", e); }
         }
       } catch (e) {}
     }
@@ -314,18 +314,18 @@
   // content script; null under CDP injection / plain pages, in which case
   // vendor files resolve same-origin (the fixture server mirrors /vendor/).
   try {
-    window.__wasMonkeyExtBaseURL =
+    window.__WASMonkeyExtBaseURL =
       typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function"
         ? chrome.runtime.getURL("")
         : null;
-  } catch (e) { window.__wasMonkeyExtBaseURL = null; }
+  } catch (e) { window.__WASMonkeyExtBaseURL = null; }
 
   // Lazy-load contract reserved for Phase 4/5 (docs/feasibility.md §7.6):
   // getBinaryen() / getWabt() pull the vendored browser builds into the MAIN
   // world on demand instead of at document_start.
   var vendorP = {};
   function vendorBase() {
-    return window.__wasMonkeyExtBaseURL || (location.origin ? location.origin + "/" : "/");
+    return window.__WASMonkeyExtBaseURL || (location.origin ? location.origin + "/" : "/");
   }
   function getBinaryen() {
     if (!vendorP.binaryen) {
@@ -344,20 +344,20 @@
         s.onload = function () {
           try { resolve(window.WabtModule()); } catch (e) { reject(e); }
         };
-        s.onerror = function () { reject(new Error("wasMonkey: wabt vendor script blocked or missing")); };
+        s.onerror = function () { reject(new Error("WASMonkey: wabt vendor script blocked or missing")); };
         (document.head || document.documentElement).appendChild(s);
       }).catch(function (e) { vendorP.wabt = null; throw e; });
     }
     return vendorP.wabt;
   }
-  window.__wasMonkey = {
+  window.__WASMonkey = {
     version: "0.0.2",
     getBinaryen: getBinaryen,
     getWabt: getWabt,
-    get logs() { return window.__wasMonkeyLogs || []; },
+    get logs() { return window.__WASMonkeyLogs || []; },
   };
 
-  // Hook registries (populated by user scripts via wasMonkey API).
+  // Hook registries (populated by user scripts via WASMonkey API).
   var beforeHooks = [];
   var afterHooks = [];
   var currentGrants = [];
@@ -368,7 +368,7 @@
     if (_cacheDB) return Promise.resolve(_cacheDB);
     return new Promise(function (resolve) {
       try {
-        var req = indexedDB.open("wasMonkeyCache", 1);
+        var req = indexedDB.open("WASMonkeyCache", 1);
         req.onupgradeneeded = function () { try { req.result.createObjectStore("patches"); } catch (e) {} };
         req.onsuccess = function () { _cacheDB = req.result; resolve(_cacheDB); };
         req.onerror = function () { resolve(null); };
@@ -400,8 +400,8 @@
     if (!beforeHooks.length) return bytes;
     // Hash
     var hash = "";
-    try { hash = await window.__wasMonkey.hashBytes(bytes); } catch (e) {}
-    var version = (typeof window.__wasMonkeyScriptVersion === "string") ? window.__wasMonkeyScriptVersion : "0";
+    try { hash = await window.__WASMonkey.hashBytes(bytes); } catch (e) {}
+    var version = (typeof window.__WASMonkeyScriptVersion === "string") ? window.__WASMonkeyScriptVersion : "0";
     var key = hash + ":" + version;
     // Cache check
     var cached = await cacheGet(key);
@@ -426,7 +426,7 @@
   var _binaryenCache = null;
   var _wabtCache = null;
   function _extBase() {
-    if (typeof window.__wasMonkeyExtBaseURL === "string") return window.__wasMonkeyExtBaseURL;
+    if (typeof window.__WASMonkeyExtBaseURL === "string") return window.__WASMonkeyExtBaseURL;
     return null;
   }
   function loadBinaryen() {
@@ -437,7 +437,7 @@
       _binaryenCache = m.default || m;
       return _binaryenCache;
     }).catch(function (e) {
-      console.error("[wasMonkey] failed to load Binaryen:", e);
+      console.error("[WASMonkey] failed to load Binaryen:", e);
       return null;
     });
   }
@@ -455,16 +455,16 @@
       s.onload = function () {
         window.WabtModule().then(function (m) { _wabtCache = m; resolve(m); }).catch(function (e) { console.error(e); resolve(null); });
       };
-      s.onerror = function (e) { console.error("[wasMonkey] failed to load wabt:", e); resolve(null); };
+      s.onerror = function (e) { console.error("[WASMonkey] failed to load wabt:", e); resolve(null); };
       (document.head || document.documentElement).appendChild(s);
     });
   }
 
-  function makeWasMonkeyAPI(script) {
+  function makeWASMonkeyAPI(script) {
     var grants = (script && script.grants) || [];
     return {
       apiVersion: 1,
-      log: function () { console.log.apply(console, ["[wasMonkey:" + ((script && script.name) || "script") + "]"].concat(Array.prototype.slice.call(arguments))); },
+      log: function () { console.log.apply(console, ["[WASMonkey:" + ((script && script.name) || "script") + "]"].concat(Array.prototype.slice.call(arguments))); },
       getBinaryen: function () { return loadBinaryen(); },
       getWabt: function () { return loadWabt(); },
       disassemble: function () { return Promise.resolve(""); },
@@ -477,14 +477,14 @@
       },
       onBeforeInstantiate: function (cb) {
         if (grants.indexOf("patchBytes") < 0) {
-          console.warn("[wasMonkey] script '" + (script && script.name) + "' lacks @grant patchBytes; onBeforeInstantiate ignored.");
+          console.warn("[WASMonkey] script '" + (script && script.name) + "' lacks @grant patchBytes; onBeforeInstantiate ignored.");
           return;
         }
         if (typeof cb === "function") beforeHooks.push(cb);
       },
       onAfterInstantiate: function (cb) {
         if (grants.indexOf("patchExports") < 0 && grants.indexOf("patchBytes") < 0) {
-          console.warn("[wasMonkey] script '" + (script && script.name) + "' lacks @grant patchExports; onAfterInstantiate ignored.");
+          console.warn("[WASMonkey] script '" + (script && script.name) + "' lacks @grant patchExports; onAfterInstantiate ignored.");
           return;
         }
         if (typeof cb === "function") afterHooks.push(cb);
@@ -493,13 +493,13 @@
         get: function (key) { try { var v = localStorage.getItem("wm:" + (script && script.id) + ":" + key); return Promise.resolve(v ? JSON.parse(v) : null); } catch (e) { return Promise.resolve(null); } },
         set: function (key, val) { try { localStorage.setItem("wm:" + (script && script.id) + ":" + key, JSON.stringify(val)); } catch (e) {} return Promise.resolve(); },
       },
-      utils: (typeof wasMonkeyUtils !== "undefined") ? wasMonkeyUtils : null,
+      utils: (typeof WASMonkeyUtils !== "undefined") ? WASMonkeyUtils : null,
     };
   }
 
   // Phase 2: receive matching scripts from the isolated bridge and execute them.
-  window.__wasMonkeyScripts = [];
-  document.addEventListener("wasmonkey:scripts", function (ev) {
+  window.__WASMonkeyScripts = [];
+  document.addEventListener("WASMonkey:scripts", function (ev) {
     var scripts = [];
     var version = "0";
     try {
@@ -507,25 +507,25 @@
       if (Array.isArray(parsed)) { scripts = parsed; }
       else if (parsed && Array.isArray(parsed.scripts)) { scripts = parsed.scripts; version = parsed.version || "0"; }
     } catch (e) { scripts = []; }
-    window.__wasMonkeyScripts = scripts;
-    window.__wasMonkeyScriptVersion = version;
+    window.__WASMonkeyScripts = scripts;
+    window.__WASMonkeyScriptVersion = version;
     scripts.forEach(function (script) {
       if (!script || script.enabled === false) return;
       currentGrants = script.grants || [];
-      var api = makeWasMonkeyAPI(script);
-      window.wasMonkey = api;
+      var api = makeWASMonkeyAPI(script);
+      window.WASMonkey = api;
       try {
-        var fn = new Function("wasMonkey", script.code || "");
+        var fn = new Function("WASMonkey", script.code || "");
         fn(api);
       } catch (e) {
-        console.error("[wasMonkey] script '" + (script.name || script.id) + "' threw:", e);
+        console.error("[WASMonkey] script '" + (script.name || script.id) + "' threw:", e);
       }
     });
     currentGrants = [];
-    // Restore a default global wasMonkey (last script's) — keep last for convenience.
+    // Restore a default global WASMonkey (last script's) — keep last for convenience.
   });
 
-  document.dispatchEvent(new CustomEvent("wasmonkey:request-scripts", { detail: location.href }));
+  document.dispatchEvent(new CustomEvent("WASMonkey:request-scripts", { detail: location.href }));
 
   // Service Worker registration wrapping (Phase 6 groundwork).
   (function () {
@@ -547,7 +547,7 @@
     function loadHookText() {
       if (workerHookText !== null) return workerHookText;
       try {
-        var hookUrl = (typeof window.__wasMonkeyWorkerHookURL === "string") ? window.__wasMonkeyWorkerHookURL : "src/worker-hook.js";
+        var hookUrl = (typeof window.__WASMonkeyWorkerHookURL === "string") ? window.__WASMonkeyWorkerHookURL : "src/worker-hook.js";
         var xhr = new XMLHttpRequest();
         xhr.open("GET", hookUrl, false);
         xhr.send();
@@ -585,9 +585,9 @@
   })();
 
   // Global API surface for scripts and tooling (Phase 4/5 contract).
-  window.__wasMonkey = {
+  window.__WASMonkey = {
     apiVersion: 1,
-    log: function () { console.log.apply(console, ["[wasMonkey]"].concat(Array.prototype.slice.call(arguments))); },
+    log: function () { console.log.apply(console, ["[WASMonkey]"].concat(Array.prototype.slice.call(arguments))); },
     getBinaryen: loadBinaryen,
     getWabt: loadWabt,
     disassemble: async function (bytes) {
@@ -618,7 +618,7 @@
       get: function (key) { try { var v = localStorage.getItem("wm:global:" + key); return Promise.resolve(v ? JSON.parse(v) : null); } catch (e) { return Promise.resolve(null); } },
       set: function (key, val) { try { localStorage.setItem("wm:global:" + key, JSON.stringify(val)); } catch (e) {} return Promise.resolve(); },
     },
-    utils: (typeof wasMonkeyUtils !== "undefined") ? wasMonkeyUtils : null,
+    utils: (typeof WASMonkeyUtils !== "undefined") ? WASMonkeyUtils : null,
   };
 
   console.log(TAG + " hook installed (page-hook.js)");

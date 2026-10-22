@@ -1,4 +1,4 @@
-// Type definitions for the wasMonkey Developer API (Phase 5).
+// Type definitions for the WASMonkey Developer API (Phase 5).
 // Drop this file into your script project for IntelliSense.
 
 export interface LoadContext {
@@ -12,12 +12,12 @@ export interface LoadContext {
   frameUrl: string;
 }
 
-export interface WasMonkeyStorage {
+export interface WASMonkeyStorage {
   get(key: string): Promise<any>;
   set(key: string, value: any): Promise<void>;
 }
 
-export interface WasMonkeyUtils {
+export interface WASMonkeyUtils {
   findFunctionByExportName(module: any, name: string): number | null;
   replaceFunctionBody(module: any, index: number, newWatSnippet: string): boolean;
   patchConstant(bytes: Uint8Array, oldValue: number, newValue: number): Uint8Array;
@@ -28,7 +28,7 @@ export interface WasMonkeyUtils {
   decodeSleb128(bytes: Uint8Array, offset?: number): { value: number; next: number };
 }
 
-export interface WasMonkeyAPI {
+export interface WASMonkeyAPI {
   readonly apiVersion: 1;
   log(...args: unknown[]): void;
   getBinaryen(): Promise<any>;
@@ -38,16 +38,16 @@ export interface WasMonkeyAPI {
   hashBytes(bytes: Uint8Array): Promise<string>;
   onBeforeInstantiate(cb: (bytes: Uint8Array, ctx: LoadContext) => Uint8Array | void | Promise<Uint8Array | void>): void;
   onAfterInstantiate(cb: (exports: WebAssembly.Exports, ctx: LoadContext) => void): void;
-  storage: WasMonkeyStorage;
-  utils: WasMonkeyUtils | null;
+  storage: WASMonkeyStorage;
+  utils: WASMonkeyUtils | null;
 }
 
 declare global {
-  const wasMonkey: WasMonkeyAPI;
+  const WASMonkey: WASMonkeyAPI;
   interface Window {
-    wasMonkey: WasMonkeyAPI;
-    __wasMonkey: WasMonkeyAPI;
-    __wasMonkeyModules: Array<{ byteLength: number; url: string; exports: string[] | null }>;
+    WASMonkey: WASMonkeyAPI;
+    __WASMonkey: WASMonkeyAPI;
+    __WASMonkeyModules: Array<{ byteLength: number; url: string; exports: string[] | null }>;
   }
 }
 

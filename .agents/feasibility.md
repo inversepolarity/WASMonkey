@@ -1,6 +1,6 @@
 # Phase 0 — Research & Feasibility Findings
 
-**Project:** wasMonkey — cross-browser extension for intercepting/patching WebAssembly modules at load time.
+**Project:** WASMonkey — cross-browser extension for intercepting/patching WebAssembly modules at load time.
 **Phase:** 0 (Research & Feasibility)
 **Date:** 2026-10-22 (original run) — updated 2026-10-22 by an automated follow-up run that resolves the §8 limitations.
 **Status:** Prototype validated on Firefox ESR 153 (original run) **and Chromium 153 (follow-up run — headless, fully automated)**. Binaryen/wabt browser builds vendored and spiked in-browser. Interception matrix executed across 12 CSP profiles. Extension-plumbing pass on a full Chrome/Chromium binary is prepared as a one-command re-run (§9–§10).
@@ -19,25 +19,25 @@ Follow-up additions: `/test/battery.js`, `/test/spike.js` (CSP fixture scripts),
 - `page-hook.js` runs in the `MAIN` world at `document_start`, stashes the original `WebAssembly` methods, replaces them with wrappers that normalize inputs to bytes (logging them) and then delegate to the originals (pass-through).
 - `Response`/`Promise<Response>` inputs are cloned (`.clone()`) so bytes can be read without consuming the stream the original call needs.
 - `WebAssembly.Module`/`Instance` constructors are replaced while preserving the prototype chain and static keys, so `instanceof` checks keep working.
-- **Follow-up:** the hook now also exposes `window.__wasMonkeyExtBaseURL` (via `chrome.runtime.getURL` when running as a real extension content script) and the lazy-load contract `window.__wasMonkey.getBinaryen()` / `getWabt()` reserved by §7.6, pulling the vendored builds from `web_accessible_resources` (extension mode) or same-origin (fixtures/CDP mode). Manifest bumped to 0.0.2; WAR entries added; Firefox add-on ID added for MV3 lint compliance.
+- **Follow-up:** the hook now also exposes `window.__WASMonkeyExtBaseURL` (via `chrome.runtime.getURL` when running as a real extension content script) and the lazy-load contract `window.__WASMonkey.getBinaryen()` / `getWabt()` reserved by §7.6, pulling the vendored builds from `web_accessible_resources` (extension mode) or same-origin (fixtures/CDP mode). Manifest bumped to 0.0.2; WAR entries added; Firefox add-on ID added for MV3 lint compliance.
 
 Verified interception output (Firefox 153, local harness — original run):
 ```
-[wasMonkey] compile: 41 bytes
-[wasMonkey] instantiate: 41 bytes
-[wasMonkey] instantiateStreaming: 41 bytes
-[wasMonkey] compileStreaming: 41 bytes
-[wasMonkey] Module ctor: 41 bytes
+[WASMonkey] compile: 41 bytes
+[WASMonkey] instantiate: 41 bytes
+[WASMonkey] instantiateStreaming: 41 bytes
+[WASMonkey] compileStreaming: 41 bytes
+[WASMonkey] Module ctor: 41 bytes
 ```
 
 Verified interception output (**Chromium 153.0.8010.0**, same harness, captured over CDP `Runtime.consoleAPICalled` — follow-up run):
 ```
-[wasMonkey] hook installed (page-hook.js)
-[wasMonkey] compile: 41 bytes
-[wasMonkey] instantiate: 41 bytes
-[wasMonkey] instantiateStreaming: 41 bytes
-[wasMonkey] compileStreaming: 41 bytes
-[wasMonkey] Module ctor: 41 bytes
+[WASMonkey] hook installed (page-hook.js)
+[WASMonkey] compile: 41 bytes
+[WASMonkey] instantiate: 41 bytes
+[WASMonkey] instantiateStreaming: 41 bytes
+[WASMonkey] compileStreaming: 41 bytes
+[WASMonkey] Module ctor: 41 bytes
 ```
 
 Machine-readable evidence: `test/results/interception-matrix.json` (all runs), `test/results/interception-matrix.md` (summary table).
@@ -74,7 +74,7 @@ Empirical rules (Chromium 153):
 - **The hook intercepts and logs bytes on every profile where the page can `fetch` them**, including all profiles where compilation is blocked (11/12 profiles logged all 5 entry kinds; the 12th, `default-src 'none'`, blocks the fetch itself).
 
 Failure modes (updated with measurements):
-1. **Strict CSP without `wasm-unsafe-eval`/`unsafe-eval`**: blocks compilation of *all* wasm in the document context — the page's own and wasMonkey's patched bytes alike (measured on 5/12 profiles). Mitigation: detect and warn; optional `declarativeNetRequest` relaxation (opt-in, Phase 7); target worker/frame contexts where policies differ.
+1. **Strict CSP without `wasm-unsafe-eval`/`unsafe-eval`**: blocks compilation of *all* wasm in the document context — the page's own and WASMonkey's patched bytes alike (measured on 5/12 profiles). Mitigation: detect and warn; optional `declarativeNetRequest` relaxation (opt-in, Phase 7); target worker/frame contexts where policies differ.
 2. **Nonce/SRI**: patched bytes change content hashes; SRI on fetched `.wasm` will fail. Detect and warn rather than silently break. (SRI applies to `<script>`/`<link>` loads, not `fetch()`-ed wasm — unchanged assessment.)
 3. **Workers**: dedicated/shared/service workers cannot be content-scripted directly; need script-prepend strategy (Phase 6). Note `worker-src 'self'`/`blob:` appeared in several surveyed policies — worker contexts inherit the document policy unless separately specified, so compile rules above apply there too.
 4. **`world: "MAIN"` injection**: content scripts (and CDP-injected main-world scripts) are delivered by the browser and are **not** subject to page CSP for the injection act — measured: hook installed on 13/13 runs including `default-src 'none'`. Execution of eval/wasm *by* injected code is still governed by page CSP (measured in §5).
@@ -125,7 +125,7 @@ Original run: full automated interception verification across 20 sites required 
 
 1. Keep `page-hook.js` as the single MAIN-world entry; add an isolated-world bridge only when storage is needed (Phase 2). — unchanged.
 2. Implement the full hook surface exactly as prototyped; normalize `ArrayBuffer`/typed views/`Response`/`Promise<Response>`. — unchanged; all six points re-verified on Chromium 153.
-3. Add `@grant`-gated registration API (Phase 5) on top of the current ad hoc globals; keep `window.__wasMonkeyHooks` only as a transitional shim. — unchanged; the `window.__wasMonkey` namespace now exists as the anchor for it.
+3. Add `@grant`-gated registration API (Phase 5) on top of the current ad hoc globals; keep `window.__WASMonkeyHooks` only as a transitional shim. — unchanged; the `window.__WASMonkey` namespace now exists as the anchor for it.
 4. Implement the `<script>`-tag fallback injector early (Phase 6) because Safari and older Firefox depend on it. — strengthened by measurements: same-origin/nonce mechanics quantified (§5); `chrome-extension://` WAR loading under page CSP flagged for the extension-mode pass (§10).
 5. Add try/catch per-hook and a panic toggle from the start (Phase 7), since prototype currently lets a throwing hook break the page path. — unchanged (still Phase 1 work; the follow-up deliberately kept hook semantics identical to the validated prototype).
 6. Defer Binaryen/wabt bundling to Phase 4, but reserve the lazy-load contract in the API (`getBinaryen()`/`getWabt()`). — **done**: contract implemented, vendored, and spiked in-browser (§5).
@@ -151,7 +151,7 @@ Remaining environment gaps (new, narrow, and each with a prepared closure path) 
 
 ## 9. Follow-up run — artifacts & how to reproduce
 
-Tooling (all under `tools/phase0/`, dev deps in its own `package.json`; browsers cached outside the repo in `~/.cache/wasmonkey/`; `vendor/` gitignored + lock-pinned):
+Tooling (all under `tools/phase0/`, dev deps in its own `package.json`; browsers cached outside the repo in `~/.cache/WASMonkey/`; `vendor/` gitignored + lock-pinned):
 
 | Artifact | What it is |
 |---|---|

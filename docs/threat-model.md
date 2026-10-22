@@ -1,12 +1,12 @@
-# wasMonkey Threat Model
+# WASMonkey Threat Model
 
 ## Trust boundary
-wasMonkey scripts run in the page's MAIN world by necessity (they must touch
+WASMonkey scripts run in the page's MAIN world by necessity (they must touch
 `WebAssembly`). A script you install has the same access to the page as any
 page script — same caveat as Tampermonkey's `@grant none` scripts. Only install
 scripts from sources you trust.
 
-## What wasMonkey does
+## What WASMonkey does
 - Sandboxes user scripts from each other: each hook invocation is wrapped in
   try/catch with per-script error isolation; one script's crash does not take
   down another's hook.
@@ -15,7 +15,7 @@ scripts from sources you trust.
 - Provides a global disable toggle and per-site quick-disable (panic switch).
 - Optionally relaxes CSP headers (opt-in, off by default) via declarativeNetRequest.
 
-## What wasMonkey cannot protect against
+## What WASMonkey cannot protect against
 - A malicious installed script has full page access (same as any userscript
   manager). Verify scripts before installing; prefer shared scripts with
   checksums.
@@ -23,7 +23,7 @@ scripts from sources you trust.
 
 ## CSP / SRI
 - Strict CSP without `wasm-unsafe-eval`/`unsafe-eval` blocks re-instantiation
-  of patched bytes; wasMonkey detects and warns, and may fall back to the
+  of patched bytes; WASMonkey detects and warns, and may fall back to the
   original module. Opt-in CSP relaxation can help.
-- SRI on fetched `.wasm` will fail after patching; wasMonkey warns rather than
+- SRI on fetched `.wasm` will fail after patching; WASMonkey warns rather than
   silently breaking the page.

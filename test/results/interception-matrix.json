@@ -29,20 +29,20 @@
       "stage": "done",
       "hookInstalled": true,
       "logsFromCollect": [
-        "[wasMonkey] compile: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] instantiate: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] instantiateStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] compileStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] Module ctor: 41 bytes | page: http://127.0.0.1:38599/test/harness.html"
+        "[WASMonkey] compile: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] instantiate: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] instantiateStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] compileStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] Module ctor: 41 bytes | page: http://127.0.0.1:38599/test/harness.html"
       ],
-      "wasMonkeyConsoleLines": 11,
-      "wasMonkeyPrimaryLines": [
-        "[wasMonkey] hook installed (page-hook.js)",
-        "[wasMonkey] compile: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] instantiate: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] instantiateStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] compileStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
-        "[wasMonkey] Module ctor: 41 bytes | page: http://127.0.0.1:38599/test/harness.html"
+      "WASMonkeyConsoleLines": 11,
+      "WASMonkeyPrimaryLines": [
+        "[WASMonkey] hook installed (page-hook.js)",
+        "[WASMonkey] compile: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] instantiate: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] instantiateStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] compileStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[WASMonkey] Module ctor: 41 bytes | page: http://127.0.0.1:38599/test/harness.html"
       ],
       "kindsSeen": [
         "compile",
@@ -67,7 +67,7 @@
           "Module ctor": 1
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 11
+        "WASMonkeyConsoleLines": 11
       },
       "consoleParity": {
         "collectLogs": 5,
@@ -155,7 +155,7 @@
           "Module ctor": 3
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 7,
@@ -243,7 +243,7 @@
           "compileStreaming": 1
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 5,
@@ -331,7 +331,7 @@
           "Module ctor": 3
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 7,
@@ -419,7 +419,7 @@
           "compileStreaming": 1
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 5,
@@ -507,7 +507,7 @@
           "Module ctor": 3
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 7,
@@ -595,7 +595,7 @@
           "Module ctor": 3
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 7,
@@ -683,7 +683,7 @@
           "compileStreaming": 1
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 5,
@@ -771,7 +771,7 @@
           "Module ctor": 3
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 7,
@@ -859,7 +859,7 @@
           "Module ctor": 3
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 7,
@@ -947,7 +947,7 @@
           "compileStreaming": 1
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 5,
@@ -981,7 +981,7 @@
         "kindsSeen": [],
         "kindCounts": {},
         "allExpectedKinds": false,
-        "wasMonkeyConsoleLines": 1
+        "WASMonkeyConsoleLines": 1
       },
       "consoleParity": {
         "collectLogs": 0,
@@ -1000,13 +1000,13 @@
           "level": "error",
           "source": "security",
           "text": "Connecting to 'http://127.0.0.1:38599/test/sample.wasm' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'connect-src' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FWASMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         },
         {
           "level": "error",
           "source": "javascript",
           "text": "Fetch API cannot load http://127.0.0.1:38599/test/sample.wasm. Refused to connect because it violates the document's Content Security Policy.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FWASMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         }
       ],
       "pageErrors": []
@@ -1088,7 +1088,7 @@
           "compileStreaming": 1
         },
         "allExpectedKinds": true,
-        "wasMonkeyConsoleLines": 15
+        "WASMonkeyConsoleLines": 15
       },
       "consoleParity": {
         "collectLogs": 5,

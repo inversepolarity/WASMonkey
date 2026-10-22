@@ -60,7 +60,7 @@ async function fetchTarball(pkg) {
   const meta = await (await fetch(`https://registry.npmjs.org/${pkg.name}/${pkg.version}`)).json();
   const url = meta.dist.tarball;
   const expected = meta.dist.shasum;
-  const tmp = path.join(os.tmpdir(), `wasmonkey-vendor-${pkg.name}-${pkg.version}.tgz`);
+  const tmp = path.join(os.tmpdir(), `WASMonkey-vendor-${pkg.name}-${pkg.version}.tgz`);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`failed to fetch ${url}: ${res.status}`);
   await pipeline(res.body, fs.createWriteStream(tmp));

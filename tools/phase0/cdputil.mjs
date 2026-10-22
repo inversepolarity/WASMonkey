@@ -21,7 +21,7 @@
  * Runtime.consoleAPICalled (via puppeteer's console event), Runtime exceptions
  * (pageerror), and Log.entryAdded (structured CSP/security violation reports)
  * over CDP. Every captured line is later cross-checked against the page's own
- * /collect report of window.__wasMonkeyLogs — the two channels must agree.
+ * /collect report of window.__WASMonkeyLogs — the two channels must agree.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -136,7 +136,7 @@ export async function instrumentPage(page) {
     }
   });
   cap.client = client;
-  cap.wasMonkeyLines = () => cap.console.filter((m) => m.text.includes("[wasMonkey]")).map((m) => m.text);
+  cap.WASMonkeyLines = () => cap.console.filter((m) => m.text.includes("[WASMonkey]")).map((m) => m.text);
   cap.detach = async () => { await client.detach().catch(() => {}); };
   return cap;
 }

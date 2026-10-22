@@ -1,5 +1,5 @@
 {
-  "name": "wasmonkey-phase0-tools",
+  "name": "WASMonkey-phase0-tools",
   "version": "1.0.0",
   "description": "Phase 0 follow-up tooling: browser provisioning, CSP fixture server, interception matrix, Binaryen/wabt spike",
   "main": "index.js",

@@ -4,7 +4,7 @@ vendor/
 dist/
 *.tgz
 
-# Browser cache lives outside the repo (~/.cache/wasmonkey), but ignore any
+# Browser cache lives outside the repo (~/.cache/WASMonkey), but ignore any
 # stray local copies just in case.
 .cache/
 

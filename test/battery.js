@@ -1,5 +1,5 @@
 /**
- * battery.js — wasMonkey Phase 0 interception battery.
+ * battery.js — WASMonkey Phase 0 interception battery.
  *
  * Dual-mode fixture script:
  *  1. Loaded as an external <script> by /site/<profile> fixture pages (the
@@ -47,8 +47,8 @@
   window.__wmBattery = async function (profile) {
     var results = {
       profile: profile || "unknown",
-      hookInstalled: !!window.__wasMonkeyInstalled,
-      extBase: window.__wasMonkeyExtBaseURL || null,
+      hookInstalled: !!window.__WASMonkeyInstalled,
+      extBase: window.__WASMonkeyExtBaseURL || null,
       ua: navigator.userAgent,
       entries: [],
       errors: [],
@@ -76,7 +76,7 @@
         ["ModuleCtor", async function () { var m = new WebAssembly.Module(buf); new WebAssembly.Instance(m, {}); return bytes.byteLength; }],
         ["instantiateModuleOverload", async function () { var m = new WebAssembly.Module(buf); await WebAssembly.instantiate(m, {}); return bytes.byteLength; }],
         ["patchedReinstantiate", async function () {
-          var patched = appendCustomSection(bytes, "wasmonkey", new TextEncoder().encode("phase0"));
+          var patched = appendCustomSection(bytes, "WASMonkey", new TextEncoder().encode("phase0"));
           var m = new WebAssembly.Module(patched.buffer);
           await WebAssembly.instantiate(m, {});
           return patched.byteLength;
@@ -89,8 +89,8 @@
       }
     }
 
-    results.hookInstalledAfter = !!window.__wasMonkeyInstalled;
-    results.logs = (window.__wasMonkeyLogs || []).slice();
+    results.hookInstalledAfter = !!window.__WASMonkeyInstalled;
+    results.logs = (window.__WASMonkeyLogs || []).slice();
     return results;
   };
 

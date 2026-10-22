@@ -1,8 +1,8 @@
 (function () {
   "use strict";
-  if (self.__wasMonkeyInstalled) return;
-  self.__wasMonkeyInstalled = true;
-  var TAG = "[wasMonkey-worker]";
+  if (self.__WASMonkeyInstalled) return;
+  self.__WASMonkeyInstalled = true;
+  var TAG = "[WASMonkey-worker]";
 
   var orig = {
     instantiate: WebAssembly.instantiate,
@@ -24,7 +24,7 @@
   function log(kind, bytes) {
     try {
       var msg = TAG + " " + kind + ": " + (bytes ? bytes.byteLength : "?") + " bytes | worker: " + (self.location && self.location.href);
-      (self.__wasMonkeyLogs = self.__wasMonkeyLogs || []).push(msg);
+      (self.__WASMonkeyLogs = self.__WASMonkeyLogs || []).push(msg);
       console.log(msg);
     } catch (e) {}
   }

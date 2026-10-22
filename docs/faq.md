@@ -1,6 +1,6 @@
 # FAQ
 
-**Q: Does wasMonkey send my data anywhere?**
+**Q: Does WASMonkey send my data anywhere?**
 A: No. Everything stays on your device.
 
 **Q: Why does it need `<all_urls>`?**

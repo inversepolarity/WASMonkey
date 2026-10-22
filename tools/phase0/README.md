@@ -8,7 +8,7 @@ non-interactively; no manual browser session is needed.
 
 | File | Purpose |
 |---|---|
-| `browser.mjs` | Provisions a headless-capable Chromium 153 from `@sparticuz/chromium` (registry.npmjs.org — inside the sandbox egress allowlist) into `~/.cache/wasmonkey/` (outside git). Idempotent. |
+| `browser.mjs` | Provisions a headless-capable Chromium 153 from `@sparticuz/chromium` (registry.npmjs.org — inside the sandbox egress allowlist) into `~/.cache/WASMonkey/` (outside git). Idempotent. |
 | `vendor.mjs` | Vendors the official **browser** builds of Binaryen.js and wabt.js from npm into `vendor/` with SHA-256 pinning in `vendor.lock.json`. |
 | `serve.mjs` | Local fixture server: static repo files, `/collect` endpoint (same contract as `test/harness.html`), and 12 CSP fixture profiles (`/site/<profile>`, `/spike/<profile>`) replicating the §4 site survey + generic policy classes. |
 | `cdputil.mjs` | Launch + instrumentation helpers: two run modes (`extension` via `--load-extension`; `cdp-inject` via `Page.addScriptToEvaluateOnNewDocument`), reliable CDP console/security capture, `/collect` cross-check (console parity). |

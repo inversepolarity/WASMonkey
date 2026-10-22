@@ -1,10 +1,10 @@
-# Community Guidelines for wasMonkey Scripts
+# Community Guidelines for WASMonkey Scripts
 
-- Scripts are shared as `.wasmonkey.js` files with a metadata header.
+- Scripts are shared as `.WASMonkey.js` files with a metadata header.
 - Only install scripts from sources you trust; a script runs in the page's
   MAIN world and has full page access.
 - Verify the SHA-256 checksum shown in the dashboard before installing.
 - Scripts that bypass paywalls, anti-cheat, or DRM-adjacent protections are the
   user's own legal/ethical responsibility — same disclaimer posture as
-  Tampermonkey/Greasy Fork. wasMonkey ships no such scripts.
+  Tampermonkey/Greasy Fork. WASMonkey ships no such scripts.
 - Report malicious scripts to the community index maintainers.
