@@ -111,8 +111,10 @@
           tableSize: null,
         });
       } catch (e) {}
+      rememberExportsForReplay(_r);
       return _r;
     }
+    await awaitScriptsGrace();
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
     var url = r.url;
@@ -157,6 +159,7 @@
         tableSize: tableSize,
       });
     } catch (e) {}
+    rememberExportsForReplay(result);
     // after hooks
     if (afterHooks.length) {
       try {
@@ -183,8 +186,10 @@
           tableSize: null,
         });
       } catch (e) {}
+      rememberExportsForReplay(_r2);
       return _r2;
     }
+    await awaitScriptsGrace();
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
     var url = r.url;
@@ -233,6 +238,7 @@
         tableSize: tableSize,
       });
     } catch (e) {}
+    rememberExportsForReplay(result);
     return result;
   };
 
@@ -243,6 +249,7 @@
       try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: 0, url: location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
       return _cfast;
     }
+    await awaitScriptsGrace();
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
     var url = r.url;
@@ -277,6 +284,7 @@
       try { (window.__WASMonkeyModules = window.__WASMonkeyModules || []).push({ byteLength: 0, url: location.href, exports: null, memorySize: null, tableSize: null }); } catch (e) {}
       return _csfast;
     }
+    await awaitScriptsGrace();
     var r = await readBytesFromResponseLike(source).catch(function () { return { bytes: null, url: null }; });
     var bytes = r.bytes;
     var url = r.url;
@@ -351,6 +359,8 @@
           try { afterHooks[i](instance.exports, ctx); } catch (e) { console.error("[WASMonkey] onAfterInstantiate threw:", e); }
         }
       } catch (e) {}
+    } else {
+      rememberExportsForReplay(instance);
     }
     return instance;
   }
@@ -413,6 +423,49 @@
   var beforeHooks = [];
   var afterHooks = [];
   var currentGrants = [];
+
+  // Modules are often instantiated at document_start, before the isolated
+  // bridge has handed our user scripts over (see the delivery comment further
+  // down). Instances created in that window are remembered (bounded) so that
+  // onAfterInstantiate hooks still see their exports once the scripts land.
+  var _preDeliveryExports = [];
+  var PRE_DELIVERY_REPLAY_LIMIT = 4;
+  function rememberExportsForReplay(result) {
+    try {
+      if (_scriptsDelivered || afterHooks.length) return;
+      if (_preDeliveryExports.length >= PRE_DELIVERY_REPLAY_LIMIT) return;
+      var exp = result && result.instance ? result.instance.exports
+        : (result && result.exports ? result.exports : null);
+      if (exp) _preDeliveryExports.push(exp);
+    } catch (e) {}
+  }
+
+  // Startup grace: the very first instantiation on a page usually happens
+  // before the isolated bridge has answered (storage round-trip), and a
+  // onBeforeInstantiate hook can only patch bytes it was awake for. The first
+  // async entry point therefore waits a short, bounded moment for the script
+  // payload instead of letting that module slip through unhooked.
+  // Override with chrome.storage.local { startupGraceMs: 0 } to opt out.
+  var _scriptsReadyCallbacks = [];
+  var _startupGraceUsed = false;
+  function signalScriptsReady() {
+    var cbs = _scriptsReadyCallbacks.splice(0, _scriptsReadyCallbacks.length);
+    for (var i = 0; i < cbs.length; i++) {
+      try { cbs[i](); } catch (e) {}
+    }
+  }
+  function awaitScriptsGrace() {
+    if (_scriptsDelivered || _startupGraceUsed) return Promise.resolve();
+    _startupGraceUsed = true;
+    var ms = (typeof window.__WASMonkeyStartupGraceMs === "number") ? window.__WASMonkeyStartupGraceMs : 300;
+    if (ms <= 0) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var done = false;
+      function finish() { if (done) return; done = true; resolve(); }
+      _scriptsReadyCallbacks.push(finish);
+      setTimeout(finish, ms);
+    });
+  }
 
   // IndexedDB patch cache (Phase 9).
   var _cacheDB = null;
@@ -512,8 +565,10 @@
     });
   }
 
-  function makeWASMonkeyAPI(script) {
-    var grants = (script && script.grants) || [];
+  function makeWASMonkeyAPI(script, resolvedGrants) {
+    // Grants may come from the stored script record or from the
+    // `// @grant` lines in its code header; callers pass the union.
+    var grants = Array.isArray(resolvedGrants) ? resolvedGrants : ((script && script.grants) || []);
     return {
       apiVersion: 1,
       log: function () { console.log.apply(console, ["[WASMonkey:" + ((script && script.name) || "script") + "]"].concat(Array.prototype.slice.call(arguments))); },
@@ -549,36 +604,161 @@
     };
   }
 
-  // Phase 2: receive matching scripts from the isolated bridge and execute them.
+  // --- Phase 2: user-script delivery --------------------------------------
+  // The isolated bridge serializes the scripts matching this URL and hands them
+  // over on the "WASMonkey:scripts" document event. This has to survive BOTH
+  // injection orders:
+  //
+  //   Chrome  - MAIN and ISOLATED content scripts are installed as part of one
+  //             document_start batch, before any page code runs.
+  //   Firefox - document_start scripts defined in different manifest entries
+  //             are evaluated one after the other. This file (MAIN) finishes
+  //             first, so a one-shot request dispatched here is gone before
+  //             isolated-bridge.js has registered its listener, and no script
+  //             ever arrives.
+  //
+  // So: re-request with backoff across DOMContentLoaded/load, and the bridge
+  // also pushes proactively once it starts up. Whichever side runs last closes
+  // the gap.
   window.__WASMonkeyScripts = [];
-  document.addEventListener("WASMonkey:scripts", function (ev) {
-    var scripts = [];
-    var version = "0";
+
+  var _scriptRequestTimers = [];
+  var _scriptsDelivered = false;
+  var _appliedScriptKeys = Object.create(null);
+
+  function grantsFromHeader(code) {
+    var out = [];
+    var re = /^[ \t]*\/\/[ \t]*@grant[ \t]+(.+)$/gm;
+    var m;
+    while ((m = re.exec(code || "")) !== null) {
+      String(m[1]).trim().split(/[\s|,]+/).forEach(function (g) {
+        if (g && out.indexOf(g) < 0) out.push(g);
+      });
+    }
+    return out;
+  }
+
+  function resolveGrants(script) {
+    var grants = Array.isArray(script && script.grants) ? script.grants.slice() : [];
+    var fromCode = [];
     try {
-      var parsed = JSON.parse((ev && ev.detail) || "[]");
-      if (Array.isArray(parsed)) { scripts = parsed; }
-      else if (parsed && Array.isArray(parsed.scripts)) { scripts = parsed.scripts; version = parsed.version || "0"; }
-    } catch (e) { scripts = []; }
-    window.__WASMonkeyScripts = scripts;
-    window.__WASMonkeyScriptVersion = version;
+      if (typeof WASMonkeyMetadata !== "undefined" && WASMonkeyMetadata.parseMetadata) {
+        fromCode = WASMonkeyMetadata.parseMetadata((script && script.code) || "").grants || [];
+      } else {
+        fromCode = grantsFromHeader(script && script.code);
+      }
+    } catch (e) { fromCode = []; }
+    fromCode.forEach(function (g) { if (grants.indexOf(g) < 0) grants.push(g); });
+    return grants;
+  }
+
+  function applyScripts(scripts) {
+    var applied = 0;
     scripts.forEach(function (script) {
       if (!script || script.enabled === false) return;
-      currentGrants = script.grants || [];
-      var api = makeWASMonkeyAPI(script);
+      var key = String(script.id || script.name || "anon") + ":" +
+        String(script.updatedAt || script.version || script.createdAt || 0);
+      if (_appliedScriptKeys[key]) return;
+      _appliedScriptKeys[key] = true;
+      currentGrants = resolveGrants(script);
+      var api = makeWASMonkeyAPI(script, currentGrants);
       window.WASMonkey = api;
       window.wasMonkey = api;
       try {
         var fn = new Function("WASMonkey, wasMonkey", script.code || "");
         fn(api, api);
+        applied++;
       } catch (e) {
         console.error("[WASMonkey] script '" + (script.name || script.id) + "' threw:", e);
       }
     });
     currentGrants = [];
-    // Restore a default global WASMonkey (last script's) — keep last for convenience.
+    if (applied) console.log(TAG + " " + applied + " script(s) applied");
+
+    // Replay exports of modules instantiated before the scripts arrived.
+    if (applied && afterHooks.length && _preDeliveryExports.length) {
+      var replay = _preDeliveryExports.slice();
+      _preDeliveryExports.length = 0;
+      console.log(TAG + " replaying onAfterInstantiate for " + replay.length + " module(s) created before delivery");
+      replay.forEach(function (exportsObj) {
+        var rctx = { url: location.href, initiatorStack: null, byteLength: 0, frameUrl: location.href, replayed: true };
+        for (var k = 0; k < afterHooks.length; k++) {
+          try { afterHooks[k](exportsObj, rctx); } catch (e) { console.error("[WASMonkey] onAfterInstantiate threw:", e); }
+        }
+      });
+    }
+    return applied;
+  }
+
+  function stopScriptRequests() {
+    for (var i = 0; i < _scriptRequestTimers.length; i++) {
+      try { clearTimeout(_scriptRequestTimers[i]); } catch (e) {}
+    }
+    _scriptRequestTimers = [];
+  }
+
+  function requestScripts() {
+    try {
+      document.dispatchEvent(new CustomEvent("WASMonkey:request-scripts", { detail: location.href }));
+    } catch (e) {}
+  }
+
+  function handleScriptsPayload(payload) {
+    var scripts = [];
+    var version = "0";
+    try {
+      var parsed = typeof payload === "string" ? JSON.parse(payload || "[]") : payload;
+      if (Array.isArray(parsed)) { scripts = parsed; }
+      else if (parsed && Array.isArray(parsed.scripts)) { scripts = parsed.scripts; version = parsed.version || "0"; }
+    } catch (e) { scripts = []; }
+    window.__WASMonkeyScripts = scripts;
+    window.__WASMonkeyScriptVersion = version;
+    if (!_scriptsDelivered) {
+      _scriptsDelivered = true;
+      stopScriptRequests();
+      signalScriptsReady();
+    }
+    return applyScripts(scripts);
+  }
+
+  document.addEventListener("WASMonkey:scripts", function (ev) {
+    handleScriptsPayload(ev && ev.detail);
   });
 
-  document.dispatchEvent(new CustomEvent("WASMonkey:request-scripts", { detail: location.href }));
+  function scheduleScriptRequests() {
+    if (_scriptsDelivered) return;
+    var delays = [0, 40, 120, 300, 700, 1500, 3000];
+    for (var i = 0; i < delays.length; i++) {
+      _scriptRequestTimers.push(setTimeout(function () {
+        if (!_scriptsDelivered) requestScripts();
+      }, delays[i]));
+    }
+    ["DOMContentLoaded", "load", "pageshow"].forEach(function (type) {
+      try {
+        document.addEventListener(type, function () {
+          if (!_scriptsDelivered) requestScripts();
+        }, { once: true });
+      } catch (e) {}
+    });
+    setTimeout(function () {
+      if (!_scriptsDelivered) {
+        // Nothing is coming: stop pinning instance exports for a replay.
+        _preDeliveryExports.length = 0;
+        console.warn(TAG + " no script payload received from the isolated bridge; user scripts are NOT active on this page. " +
+          "Reload the tab; if it persists, check that the extension has access to this site and is not disabled here.");
+      }
+    }, 3600);
+  }
+
+  // Manual re-sync from the console: __WASMonkeyRefreshScripts()
+  window.__WASMonkeyRefreshScripts = function () {
+    _scriptsDelivered = false;
+    stopScriptRequests();
+    scheduleScriptRequests();
+    return true;
+  };
+
+  scheduleScriptRequests();
 
   // Service Worker registration wrapping (Phase 6 groundwork).
   (function () {

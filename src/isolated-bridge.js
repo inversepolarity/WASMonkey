@@ -23,6 +23,57 @@
     document.dispatchEvent(new CustomEvent("WASMonkey:ext-base", { detail: JSON.stringify({ workerHookURL: _workerHookURL, extBaseURL: _extBaseURL }) }));
   } catch (e) {}
 
+  // --- user-script delivery (MAIN world <- here) --------------------------
+  // The MAIN-side hook may finish before this file is even evaluated
+  // (Firefox evaluates document_start content scripts one entry at a time),
+  // which loses its one-shot "WASMonkey:request-scripts" event. So we push the
+  // matching scripts proactively at startup as well, and again when the DOM is
+  // ready and whenever the script store changes.
+  var _lastPushedKey = null;
+
+  function collectScripts(cb) {
+    try {
+      if (typeof WASMonkeyStorage !== "undefined" && WASMonkeyStorage.listScriptsForUrl) {
+        WASMonkeyStorage.listScriptsForUrl(location.href, function (err, scripts) {
+          cb(err ? [] : (scripts || []));
+        });
+        return;
+      }
+    } catch (e) {}
+    try {
+      chrome.storage.local.get({ scripts: [] }, function (res) {
+        cb((res && res.scripts) || []);
+      });
+    } catch (e) { cb([]); }
+  }
+
+  function deliverScripts(force) {
+    collectScripts(function (scripts) {
+      var version = "0";
+      try {
+        version = (scripts || []).map(function (s) {
+          return s.updatedAt || s.createdAt || 0;
+        }).reduce(function (a, b) { return Math.max(a, b); }, 0).toString();
+      } catch (e) {}
+      var key = (scripts || []).map(function (s) {
+        return [s.id, s.updatedAt || s.createdAt || 0, s.enabled === false ? 0 : 1].join(":");
+      }).join("|");
+      // A request from the MAIN world is answered even if it looks identical;
+      // the page side de-duplicates before re-running scripts.
+      if (!force && key === _lastPushedKey) return;
+      _lastPushedKey = key;
+      try {
+        document.dispatchEvent(new CustomEvent("WASMonkey:scripts", {
+          detail: JSON.stringify({ scripts: scripts || [], version: version })
+        }));
+      } catch (e) {}
+    });
+  }
+
+  // Shipped scripts are matched synchronously from a cold start: push now so a
+  // MAIN hook that already raced past us still receives them.
+  deliverScripts(true);
+
   function injectFallback() {
     try {
       // Only inject if the MAIN-world hook has not already installed itself.
@@ -52,10 +103,12 @@
 
   // Propagate settings to MAIN world.
   try {
-    chrome.storage.local.get({ logVerbosity: "normal", recordMode: false }, function (res) {
+    chrome.storage.local.get({ logVerbosity: "normal", recordMode: false, startupGraceMs: 300 }, function (res) {
       try {
         var s = document.createElement("script");
-        s.textContent = "window.__WASMonkeyLogVerbosity=" + JSON.stringify(res.logVerbosity || "normal") + "; window.__WASMonkeyRecordMode=" + JSON.stringify(res.recordMode === true) + ";";
+        s.textContent = "window.__WASMonkeyLogVerbosity=" + JSON.stringify(res.logVerbosity || "normal") +
+          "; window.__WASMonkeyRecordMode=" + JSON.stringify(res.recordMode === true) +
+          "; window.__WASMonkeyStartupGraceMs=" + JSON.stringify(typeof res.startupGraceMs === "number" ? res.startupGraceMs : 300) + ";";
         (document.head || document.documentElement).appendChild(s);
         s.remove();
       } catch (e) {}
@@ -110,33 +163,33 @@
     });
   } catch (e) {}
 
-  // Relay channel placeholder for Phase 2 script delivery.
-  // MAIN world emits "WASMonkey:request-scripts"; bridge replies with
+  // MAIN world emits "WASMonkey:request-scripts"; we answer with
   // "WASMonkey:scripts" carrying serialized matching scripts.
-  document.addEventListener("WASMonkey:request-scripts", function (ev) {
-    try {
-      var url = (ev && ev.detail) ? ev.detail : location.href;
-      if (typeof WASMonkeyStorage !== "undefined" && WASMonkeyStorage.listScriptsForUrl) {
-        WASMonkeyStorage.listScriptsForUrl(url, function (err, scripts) {
-          var version = "0";
-          try { version = (scripts || []).map(function (s) { return s.updatedAt || s.createdAt || 0; }).reduce(function (a, b) { return Math.max(a, b); }, 0).toString(); } catch (e) {}
-          try {
-            document.dispatchEvent(new CustomEvent("WASMonkey:scripts", {
-              detail: JSON.stringify({ scripts: scripts || [], version: version })
-            }));
-          } catch (e) {}
-        });
-      } else {
-        chrome.storage.local.get({ scripts: [] }, function (res) {
-          try {
-            document.dispatchEvent(new CustomEvent("WASMonkey:scripts", {
-              detail: JSON.stringify({ scripts: (res && res.scripts) || [], version: "0" })
-            }));
-          } catch (e) {}
-        });
-      }
-    } catch (e) {}
+  document.addEventListener("WASMonkey:request-scripts", function () {
+    deliverScripts(true);
   });
+
+  // Re-sync once the document settles: covers a page-hook copy that was
+  // injected late (fallback <script> path) and bfcache restores.
+  try {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function () { deliverScripts(true); }, { once: true });
+    }
+    window.addEventListener("load", function () { deliverScripts(true); }, { once: true });
+    window.addEventListener("pageshow", function () { deliverScripts(true); }, { once: true });
+  } catch (e) {}
+
+  // Keep open tabs in sync when scripts are added/edited/toggled.
+  try {
+    if (chrome.storage.onChanged) {
+      chrome.storage.onChanged.addListener(function (changes, area) {
+        if (area && area !== "local") return;
+        if (changes && Object.prototype.hasOwnProperty.call(changes, "scripts")) {
+          deliverScripts(true);
+        }
+      });
+    }
+  } catch (e) {}
 
   console.log(TAG + " isolated bridge loaded");
 })();

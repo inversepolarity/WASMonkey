@@ -75,3 +75,24 @@ test("export/import round-trip", async () => {
   assert.equal(scripts.length, 1);
   assert.equal(scripts[0].name, "T");
 });
+test("grants declared only in the code header are stored", async () => {
+  reset();
+  const code = "// ==WASMonkeyScript==\n// @name H\n// @match *\n// @grant patchBytes\n// ==/WASMonkeyScript==\nWASMonkey.log('hi');";
+  await new Promise((res) => api.addScript({ code, grants: [] }, (e, s) => {
+    assert.equal(e, null);
+    assert.ok(s.grants.includes("patchBytes"), "header @grant must be persisted, got " + JSON.stringify(s.grants));
+    res();
+  }));
+});
+
+test("updateScript keeps grants from the header and the record", async () => {
+  reset();
+  let id;
+  await new Promise((res) => api.addScript({ code: "", grants: ["patchExports"], match: ["*"] }, (e, s) => { id = s.id; res(); }));
+  const code = "// ==WASMonkeyScript==\n// @grant patchBytes\n// ==/WASMonkeyScript==\n";
+  await new Promise((res) => api.updateScript(id, { code }, (e, s) => {
+    assert.equal(e, null);
+    assert.deepEqual(s.grants.slice().sort(), ["patchBytes", "patchExports"]);
+    res();
+  }));
+});
