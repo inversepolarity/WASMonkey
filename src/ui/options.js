@@ -93,8 +93,6 @@ async function updateChecksum() {
     $("checksum").textContent = "sha256:" + hex.slice(0, 12) + "…";
   } catch (e) {}
 }
-editor.on("change", updateChecksum);
-updateChecksum();
 
 function collectMeta() {
   return {
@@ -268,6 +266,9 @@ editor = new EditorView({
   extensions: [basicSetup, javascript()],
   parent: $("editor"),
 });
+
+editor.on("change", updateChecksum);
+updateChecksum();
 
 // Phase 8: WASM -> WAT viewer
 let wabtModulePromise = null;

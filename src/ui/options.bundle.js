@@ -25455,8 +25455,6 @@ async function updateChecksum() {
   } catch (e) {
   }
 }
-editor.on("change", updateChecksum);
-updateChecksum();
 function collectMeta() {
   return {
     name: $("meta-name").value.trim() || "Untitled script",
@@ -25668,6 +25666,10 @@ editor = new EditorView({
   extensions: [basicSetup, javascript()],
   parent: $("editor")
 });
+
+editor.on("change", updateChecksum);
+updateChecksum();
+
 var wabtModulePromise = null;
 function loadWabtInOptions() {
   if (wabtModulePromise) return wabtModulePromise;
