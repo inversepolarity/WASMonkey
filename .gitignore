@@ -1,6 +1,7 @@
 # Dependencies and provisioning artifacts (recreatable via tools/phase0 scripts)
 node_modules/
 vendor/
+dist/
 *.tgz
 
 # Browser cache lives outside the repo (~/.cache/wasmonkey), but ignore any

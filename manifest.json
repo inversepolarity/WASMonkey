@@ -1,28 +1,47 @@
 {
   "manifest_version": 3,
-  "name": "wasMonkey (prototype)",
-  "version": "0.0.2",
-  "description": "Prototype: intercept and log WASM loads (Phase 0 feasibility).",
-  "permissions": ["storage", "scripting"],
+  "name": "wasMonkey",
+  "version": "0.1.0",
+  "description": "Tampermonkey for WebAssembly: intercept, inspect, and patch WASM modules at load time.",
+  "permissions": ["storage", "scripting", "declarativeNetRequest"],
   "host_permissions": ["<all_urls>"],
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "wasmonkey-prototype@inversepolarity.github.io",
-      "strict_min_version": "128.0"
-    }
-  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/page-hook.js"],
+      "js": ["src/metadata.js", "src/patch-utils.js", "src/page-hook.js"],
       "run_at": "document_start",
       "world": "MAIN"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/metadata.js", "src/storage.js", "src/isolated-bridge.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED"
     }
   ],
+  "options_page": "src/ui/options.html",
+  "action": {
+    "default_popup": "src/ui/popup.html",
+    "default_title": "wasMonkey"
+  },
   "web_accessible_resources": [
     {
-      "resources": ["vendor/binaryen/index.js", "vendor/wabt/index.js", "src/page-hook.js"],
+      "resources": ["src/page-hook.js", "src/worker-hook.js", "vendor/binaryen/index.js", "vendor/wabt/index.js"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wasmonkey@example.com",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
 }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>wasMonkey — Dashboard</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>wasMonkey</h1>
+    <nav>
+      <button data-view="scripts" class="nav active">Scripts</button>
+      <button data-view="editor" class="nav">Editor</button>
+      <button data-view="viewer" class="nav">WASM Viewer</button>
+      <button data-view="diff" class="nav">Diff</button>
+      <button data-view="settings" class="nav">Settings</button>
+    </nav>
+  </header>
+  <main>
+    <section id="view-scripts" class="view">
+      <div class="toolbar">
+        <button id="new-script">+ New script</button>
+        <button id="new-from-template">New from template</button>
+        <button id="import-scripts">Import JSON</button>
+        <button id="import-from-url">Import from URL</button>
+        <button id="export-scripts">Export JSON</button>
+      </div>
+      <table id="script-list">
+        <thead><tr><th>Name</th><th>Match</th><th>Enabled</th><th>Updated</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <section id="view-editor" class="view hidden">
+      <div class="editor-toolbar">
+        <input id="meta-name" placeholder="Script name">
+        <input id="meta-match" placeholder="@match (space-separated)">
+        <input id="meta-exclude" placeholder="@exclude (space-separated)">
+        <select id="meta-grant">
+          <option value="">no grants</option>
+          <option value="patchBytes">patchBytes</option>
+          <option value="patchBytes patchExports">patchBytes patchExports</option>
+          <option value="patchBytes patchExports network">all</option>
+        </select>
+        <span id="checksum" style="font-size:.75rem;color:#888;"></span>
+        <button id="save-script">Save</button>
+        <button id="save-reload">Save &amp; Reload Active Tab</button>
+        <button id="delete-script">Delete</button>
+      </div>
+      <div id="editor"></div>
+    </section>
+    <section id="view-viewer" class="view hidden">
+      <div class="toolbar">
+        <input type="file" id="viewer-file" accept=".wasm">
+        <button id="viewer-disasm">Disassemble</button>
+        <input id="viewer-search" placeholder="search export/index">
+      </div>
+      <pre id="viewer-out" style="white-space:pre-wrap;max-height:60vh;overflow:auto;background:#111;padding:.5rem;border-radius:4px;"></pre>
+    </section>
+    <section id="view-diff" class="view hidden">
+      <div class="toolbar">
+        <button id="diff-run">Diff</button>
+      </div>
+      <div style="display:flex;gap:.5rem;">
+        <textarea id="diff-a" placeholder="Original WAT" style="flex:1;height:40vh;"></textarea>
+        <textarea id="diff-b" placeholder="Patched WAT" style="flex:1;height:40vh;"></textarea>
+      </div>
+      <pre id="diff-out" style="white-space:pre-wrap;max-height:40vh;overflow:auto;background:#111;padding:.5rem;border-radius:4px;margin-top:.5rem;"></pre>
+    </section>
+    <section id="view-settings" class="view hidden">
+      <label><input type="checkbox" id="global-enabled"> Global enable</label>
+      <label>Logging verbosity:
+        <select id="log-verbosity">
+          <option value="quiet">quiet</option>
+          <option value="normal" selected>normal</option>
+          <option value="verbose">verbose</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="record-mode"> Record mode (log stack + hash per load)</label>
+      <label><input type="checkbox" id="csp-relax"> CSP relaxation (opt-in, strips CSP headers)</label>
+      <button id="clear-cache">Clear patch cache (IndexedDB)</button>
+      <button id="clear-storage">Clear all scripts</button>
+    </section>
+  </main>
+</div>
+<script src="options.bundle.js"></script>
+</body>
+</html>

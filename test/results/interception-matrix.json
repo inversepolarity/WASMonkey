@@ -1,6 +1,6 @@
 {
   "summary": {
-    "runAt": "2026-10-22T07:36:11.357Z",
+    "runAt": "2026-10-22T08:07:24.651Z",
     "tool": "tools/phase0/matrix.mjs",
     "browser": {
       "version": "Chromium 153.0.8010.0",
@@ -9,7 +9,7 @@
     },
     "hook": {
       "path": "src/page-hook.js",
-      "sha256": "4e5617cd070b3d6052d4a16dc846e0c8316b3b6a4d621406a167830cc8794e55"
+      "sha256": "89107ffe7acf359ba96b3436060b26b7568f387b372cd13e8a0953dcf765cfbb"
     },
     "counts": {
       "profilesRun": 12,
@@ -29,20 +29,20 @@
       "stage": "done",
       "hookInstalled": true,
       "logsFromCollect": [
-        "[wasMonkey] compile: 41 bytes",
-        "[wasMonkey] instantiate: 41 bytes",
-        "[wasMonkey] instantiateStreaming: 41 bytes",
-        "[wasMonkey] compileStreaming: 41 bytes",
-        "[wasMonkey] Module ctor: 41 bytes"
+        "[wasMonkey] compile: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] instantiate: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] instantiateStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] compileStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] Module ctor: 41 bytes | page: http://127.0.0.1:38599/test/harness.html"
       ],
       "wasMonkeyConsoleLines": 11,
       "wasMonkeyPrimaryLines": [
         "[wasMonkey] hook installed (page-hook.js)",
-        "[wasMonkey] compile: 41 bytes",
-        "[wasMonkey] instantiate: 41 bytes",
-        "[wasMonkey] instantiateStreaming: 41 bytes",
-        "[wasMonkey] compileStreaming: 41 bytes",
-        "[wasMonkey] Module ctor: 41 bytes"
+        "[wasMonkey] compile: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] instantiate: 41 bytes | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] instantiateStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] compileStreaming: 41 bytes (http://127.0.0.1:38599/test/sample.wasm) | page: http://127.0.0.1:38599/test/harness.html",
+        "[wasMonkey] Module ctor: 41 bytes | page: http://127.0.0.1:38599/test/harness.html"
       ],
       "kindsSeen": [
         "compile",
@@ -186,43 +186,43 @@
           "entry": "compile",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.compile(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.compile(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         },
         {
           "entry": "instantiate",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         },
         {
           "entry": "instantiateStreaming",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.instantiateStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.instantiateStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         },
         {
           "entry": "compileStreaming",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.compileStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.compileStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         },
         {
           "entry": "ModuleCtor",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         },
         {
           "entry": "instantiateModuleOverload",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         },
         {
           "entry": "patchedReinstantiate",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-v7ud0mlrn7jmvj88fqi' 'unsafe-inline'\"."
+          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-wrk36e9763mvj9clj5' 'unsafe-inline'\"."
         }
       ],
       "wasmCompileAllowed": false,
@@ -320,22 +320,22 @@
           "compile",
           "instantiate",
           "instantiateStreaming",
-          "Module ctor",
-          "compileStreaming"
+          "compileStreaming",
+          "Module ctor"
         ],
         "kindCounts": {
           "compile": 1,
           "instantiate": 1,
           "instantiateStreaming": 1,
-          "Module ctor": 3,
-          "compileStreaming": 1
+          "compileStreaming": 1,
+          "Module ctor": 3
         },
         "allExpectedKinds": true,
         "wasMonkeyConsoleLines": 15
       },
       "consoleParity": {
-        "collectLogs": 6,
-        "matchedInConsole": 6,
+        "collectLogs": 7,
+        "matchedInConsole": 7,
         "missed": [],
         "ok": true
       },
@@ -496,22 +496,22 @@
           "compile",
           "instantiate",
           "instantiateStreaming",
-          "Module ctor",
-          "compileStreaming"
+          "compileStreaming",
+          "Module ctor"
         ],
         "kindCounts": {
           "compile": 1,
           "instantiate": 1,
           "instantiateStreaming": 1,
-          "Module ctor": 3,
-          "compileStreaming": 1
+          "compileStreaming": 1,
+          "Module ctor": 3
         },
         "allExpectedKinds": true,
         "wasMonkeyConsoleLines": 15
       },
       "consoleParity": {
-        "collectLogs": 6,
-        "matchedInConsole": 6,
+        "collectLogs": 7,
+        "matchedInConsole": 7,
         "missed": [],
         "ok": true
       },
@@ -584,22 +584,22 @@
           "compile",
           "instantiate",
           "instantiateStreaming",
-          "Module ctor",
-          "compileStreaming"
+          "compileStreaming",
+          "Module ctor"
         ],
         "kindCounts": {
           "compile": 1,
           "instantiate": 1,
           "instantiateStreaming": 1,
-          "Module ctor": 3,
-          "compileStreaming": 1
+          "compileStreaming": 1,
+          "Module ctor": 3
         },
         "allExpectedKinds": true,
         "wasMonkeyConsoleLines": 15
       },
       "consoleParity": {
-        "collectLogs": 6,
-        "matchedInConsole": 6,
+        "collectLogs": 7,
+        "matchedInConsole": 7,
         "missed": [],
         "ok": true
       },
@@ -760,22 +760,22 @@
           "compile",
           "instantiate",
           "instantiateStreaming",
-          "Module ctor",
-          "compileStreaming"
+          "compileStreaming",
+          "Module ctor"
         ],
         "kindCounts": {
           "compile": 1,
           "instantiate": 1,
           "instantiateStreaming": 1,
-          "Module ctor": 3,
-          "compileStreaming": 1
+          "compileStreaming": 1,
+          "Module ctor": 3
         },
         "allExpectedKinds": true,
         "wasMonkeyConsoleLines": 15
       },
       "consoleParity": {
-        "collectLogs": 6,
-        "matchedInConsole": 6,
+        "collectLogs": 7,
+        "matchedInConsole": 7,
         "missed": [],
         "ok": true
       },
@@ -848,22 +848,22 @@
           "compile",
           "instantiate",
           "instantiateStreaming",
-          "Module ctor",
-          "compileStreaming"
+          "compileStreaming",
+          "Module ctor"
         ],
         "kindCounts": {
           "compile": 1,
           "instantiate": 1,
           "instantiateStreaming": 1,
-          "Module ctor": 3,
-          "compileStreaming": 1
+          "compileStreaming": 1,
+          "Module ctor": 3
         },
         "allExpectedKinds": true,
         "wasMonkeyConsoleLines": 15
       },
       "consoleParity": {
-        "collectLogs": 6,
-        "matchedInConsole": 6,
+        "collectLogs": 7,
+        "matchedInConsole": 7,
         "missed": [],
         "ok": true
       },
@@ -890,43 +890,43 @@
           "entry": "compile",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.compile(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.compile(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         },
         {
           "entry": "instantiate",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         },
         {
           "entry": "instantiateStreaming",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.instantiateStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.instantiateStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         },
         {
           "entry": "compileStreaming",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.compileStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.compileStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         },
         {
           "entry": "ModuleCtor",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         },
         {
           "entry": "instantiateModuleOverload",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         },
         {
           "entry": "patchedReinstantiate",
           "ok": false,
           "bytes": 0,
-          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-8maikkgo0qgmvj88kj7'\"."
+          "error": "WebAssembly.Module(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-rd94l4j5v4mvj9cqav'\"."
         }
       ],
       "wasmCompileAllowed": false,
@@ -993,20 +993,20 @@
         {
           "level": "error",
           "source": "security",
-          "text": "Loading the script 'http://127.0.0.1:34093/test/battery.js?profile=default-src-none' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
-          "url": "http://127.0.0.1:34093/site/default-src-none"
+          "text": "Loading the script 'http://127.0.0.1:38599/test/battery.js?profile=default-src-none' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": "http://127.0.0.1:38599/site/default-src-none"
         },
         {
           "level": "error",
           "source": "security",
-          "text": "Connecting to 'http://127.0.0.1:34093/test/sample.wasm' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'connect-src' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fuser%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "text": "Connecting to 'http://127.0.0.1:38599/test/sample.wasm' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'connect-src' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         },
         {
           "level": "error",
           "source": "javascript",
-          "text": "Fetch API cannot load http://127.0.0.1:34093/test/sample.wasm. Refused to connect because it violates the document's Content Security Policy.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fuser%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "text": "Fetch API cannot load http://127.0.0.1:38599/test/sample.wasm. Refused to connect because it violates the document's Content Security Policy.",
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         }
       ],
       "pageErrors": []
@@ -1100,54 +1100,5 @@
       "pageErrors": []
     }
   ],
-  "realSiteAttempts": [
-    {
-      "name": "figma",
-      "url": "https://www.figma.com/",
-      "navError": "net::ERR_CONNECTION_CLOSED at https://www.figma.com/",
-      "hookInstalled": null,
-      "wasMonkeyConsoleLines": 0,
-      "kindsSeen": []
-    },
-    {
-      "name": "google-earth",
-      "url": "https://earth.google.com/web/",
-      "navError": "net::ERR_CONNECTION_CLOSED at https://earth.google.com/web/",
-      "hookInstalled": null,
-      "wasMonkeyConsoleLines": 0,
-      "kindsSeen": []
-    },
-    {
-      "name": "mdn",
-      "url": "https://developer.mozilla.org/en-US/docs/WebAssembly",
-      "navError": "net::ERR_CONNECTION_CLOSED at https://developer.mozilla.org/en-US/docs/WebAssembly",
-      "hookInstalled": null,
-      "wasMonkeyConsoleLines": 0,
-      "kindsSeen": []
-    },
-    {
-      "name": "discord",
-      "url": "https://discord.com/app",
-      "navError": "net::ERR_CONNECTION_CLOSED at https://discord.com/app",
-      "hookInstalled": null,
-      "wasMonkeyConsoleLines": 0,
-      "kindsSeen": []
-    },
-    {
-      "name": "google-meet",
-      "url": "https://meet.google.com/",
-      "navError": "net::ERR_CONNECTION_CLOSED at https://meet.google.com/",
-      "hookInstalled": null,
-      "wasMonkeyConsoleLines": 0,
-      "kindsSeen": []
-    },
-    {
-      "name": "crazygames",
-      "url": "https://www.crazygames.com/",
-      "navError": "net::ERR_CONNECTION_CLOSED at https://www.crazygames.com/",
-      "hookInstalled": null,
-      "wasMonkeyConsoleLines": 0,
-      "kindsSeen": []
-    }
-  ]
+  "realSiteAttempts": []
 }
