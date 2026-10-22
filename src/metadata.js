@@ -1,6 +1,6 @@
 (function (global) {
   "use strict";
-  var TAG = "[wasMonkey-metadata]";
+  var TAG = "[WASMonkey-metadata]";
 
   function parseMetadata(code) {
     var meta = {
@@ -12,7 +12,7 @@
       version: null,
       code: code || "",
     };
-    var m = /\/\/\s*==WasMonkeyScript==([\s\S]*?)\/\/\s*==\/WasMonkeyScript==/.exec(code || "");
+    var m = /\/\/\s*==WASMonkeyScript==([\s\S]*?)\/\/\s*==\/WASMonkeyScript==/.exec(code || "");
     var block = m ? m[1] : "";
     var lines = block.split(/\n/);
     for (var i = 0; i < lines.length; i++) {
@@ -73,7 +73,7 @@
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   // Browser global (MAIN or ISOLATED world)
-  try { global.wasMonkeyMetadata = api; } catch (e) {}
-  try { if (typeof window !== "undefined") window.wasMonkeyMetadata = api; } catch (e) {}
-  try { if (typeof self !== "undefined") self.wasMonkeyMetadata = api; } catch (e) {}
+  try { global.WASMonkeyMetadata = api; } catch (e) {}
+  try { if (typeof window !== "undefined") window.WASMonkeyMetadata = api; } catch (e) {}
+  try { if (typeof self !== "undefined") self.WASMonkeyMetadata = api; } catch (e) {}
 })(typeof globalThis !== "undefined" ? globalThis : this);

@@ -1,6 +1,6 @@
-# Privacy Policy — wasMonkey
+# Privacy Policy — WASMonkey
 
-wasMonkey does not collect, transmit, or sell any personal data. All script
+WASMonkey does not collect, transmit, or sell any personal data. All script
 storage, patch caching, and settings live on your device via `chrome.storage.local`
 and IndexedDB. No data leaves the device. No telemetry is sent by default.
 

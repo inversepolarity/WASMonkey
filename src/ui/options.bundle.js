@@ -25417,21 +25417,21 @@ function renderList() {
 function escape(s) {
   return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
-var DEFAULT_CODE = `// ==WasMonkeyScript==
+var DEFAULT_CODE = `// ==WASMonkeyScript==
 // @name        My script
 // @match       *
 // @grant       patchBytes
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.log("hello from wasMonkey script");
+WASMonkey.log("hello from WASMonkey script");
 
-wasMonkey.onBeforeInstantiate((bytes, ctx) => {
-  wasMonkey.log("intercepted", bytes.byteLength, "bytes");
+WASMonkey.onBeforeInstantiate((bytes, ctx) => {
+  WASMonkey.log("intercepted", bytes.byteLength, "bytes");
   return bytes; // return patched bytes (or original to pass through)
 });
 
-wasMonkey.onAfterInstantiate((exports, ctx) => {
-  wasMonkey.log("exports:", Object.keys(exports));
+WASMonkey.onAfterInstantiate((exports, ctx) => {
+  WASMonkey.log("exports:", Object.keys(exports));
 });
 `;
 function editScript(id2) {
@@ -25496,6 +25496,7 @@ function saveScript(reload) {
     }
     setScripts(scripts, () => {
       renderList();
+      showView("scripts");
       if (reload) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           if (tabs[0]) chrome.tabs.reload(tabs[0].id);
@@ -25521,37 +25522,37 @@ $("new-script").addEventListener("click", () => editScript(null));
 $("new-from-template").addEventListener("click", () => {
   const choice = prompt("Template: logger / export-wrapper / byte-patcher");
   const templates = {
-    "logger": `// ==WasMonkeyScript==
+    "logger": `// ==WASMonkeyScript==
 // @name        Logger
 // @match       *
 // @grant       patchBytes
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.onBeforeInstantiate((bytes, ctx) => {
-  wasMonkey.log("WASM load", bytes.byteLength, "bytes at", ctx.url);
+WASMonkey.onBeforeInstantiate((bytes, ctx) => {
+  WASMonkey.log("WASM load", bytes.byteLength, "bytes at", ctx.url);
   return bytes;
 });
 `,
-    "export-wrapper": `// ==WasMonkeyScript==
+    "export-wrapper": `// ==WASMonkeyScript==
 // @name        Export wrapper
 // @match       *
 // @grant       patchBytes patchExports
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.onAfterInstantiate((exports, ctx) => {
+WASMonkey.onAfterInstantiate((exports, ctx) => {
   if (exports && typeof exports.add === "function") {
     const orig = exports.add;
-    exports.add = function (a, b) { wasMonkey.log("add called", a, b); return orig(a, b); };
+    exports.add = function (a, b) { WASMonkey.log("add called", a, b); return orig(a, b); };
   }
 });
 `,
-    "byte-patcher": `// ==WasMonkeyScript==
+    "byte-patcher": `// ==WASMonkeyScript==
 // @name        Byte patcher
 // @match       *
 // @grant       patchBytes
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.onBeforeInstantiate((bytes, ctx) => {
+WASMonkey.onBeforeInstantiate((bytes, ctx) => {
   // Example: return bytes unmodified. Modify with Binaryen for real patches.
   return bytes;
 });
@@ -25591,7 +25592,7 @@ $("import-from-url").addEventListener("click", async () => {
     const text = await res.text();
     let meta2 = { name: "Imported", match: ["*"], grants: [] };
     try {
-      if (typeof wasMonkeyMetadata !== "undefined") meta2 = wasMonkeyMetadata.parseMetadata(text);
+      if (typeof WASMonkeyMetadata !== "undefined") meta2 = WASMonkeyMetadata.parseMetadata(text);
     } catch (e) {
     }
     if (!confirm("Import script '" + meta2.name + "' with matches: " + meta2.match.join(", ") + "?")) return;
@@ -25621,22 +25622,22 @@ $("export-scripts").addEventListener("click", () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "wasmonkey-scripts.json";
+    a.download = "WASMonkey-scripts.json";
     a.click();
     URL.revokeObjectURL(url);
   });
 });
 function loadSettings() {
   if (!storage()) return;
-  storage().get({ wasMonkeyEnabled: true, logVerbosity: "normal", recordMode: false, cspRelaxation: false }, (res) => {
-    $("global-enabled").checked = res.wasMonkeyEnabled !== false;
+  storage().get({ WASMonkeyEnabled: true, logVerbosity: "normal", recordMode: false, cspRelaxation: false }, (res) => {
+    $("global-enabled").checked = res.WASMonkeyEnabled !== false;
     $("log-verbosity").value = res.logVerbosity || "normal";
     $("record-mode").checked = res.recordMode === true;
     $("csp-relax").checked = res.cspRelaxation === true;
   });
 }
 $("global-enabled").addEventListener("change", () => {
-  if (storage()) storage().set({ wasMonkeyEnabled: $("global-enabled").checked });
+  if (storage()) storage().set({ WASMonkeyEnabled: $("global-enabled").checked });
 });
 $("log-verbosity").addEventListener("change", () => {
   if (storage()) storage().set({ logVerbosity: $("log-verbosity").value });

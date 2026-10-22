@@ -1,10 +1,10 @@
 (function () {
   "use strict";
-  // ISOLATED-world storage layer for wasMonkey scripts.
-  // Exposes window.wasMonkeyStorage with CRUD + matching helpers.
+  // ISOLATED-world storage layer for WASMonkey scripts.
+  // Exposes window.WASMonkeyStorage with CRUD + matching helpers.
   // Schema: chrome.storage.local key "scripts" -> WasmScript[]
 
-  var TAG = "[wasMonkey-storage]";
+  var TAG = "[WASMonkey-storage]";
 
   function genId() {
     return "wm_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
@@ -33,8 +33,8 @@
     script = script || {};
     getScripts(function (err, scripts) {
       if (err) { cb && cb(err); return; }
-      var meta = (typeof wasMonkeyMetadata !== "undefined" && wasMonkeyMetadata.parseMetadata)
-        ? wasMonkeyMetadata.parseMetadata(script.code || "")
+      var meta = (typeof WASMonkeyMetadata !== "undefined" && WASMonkeyMetadata.parseMetadata)
+        ? WASMonkeyMetadata.parseMetadata(script.code || "")
         : { name: script.name || "Untitled script", match: script.match || ["*"], exclude: script.exclude || [], runAt: script.runAt || "document-start", grants: script.grants || [], version: script.version || null };
       var s = {
         id: script.id || genId(),
@@ -66,8 +66,8 @@
       if (patch.exclude != null) s.exclude = patch.exclude;
       if (patch.code != null) {
         s.code = patch.code;
-        if (typeof wasMonkeyMetadata !== "undefined" && wasMonkeyMetadata.parseMetadata) {
-          var meta = wasMonkeyMetadata.parseMetadata(s.code);
+        if (typeof WASMonkeyMetadata !== "undefined" && WASMonkeyMetadata.parseMetadata) {
+          var meta = WASMonkeyMetadata.parseMetadata(s.code);
           if (!patch.name) s.name = meta.name;
           if (!patch.match) s.match = meta.match;
           if (!patch.exclude) s.exclude = meta.exclude;
@@ -100,7 +100,7 @@
   function listScriptsForUrl(url, cb) {
     getScripts(function (err, scripts) {
       if (err) { cb && cb(err, []); return; }
-      var md = (typeof wasMonkeyMetadata !== "undefined") ? wasMonkeyMetadata : null;
+      var md = (typeof WASMonkeyMetadata !== "undefined") ? WASMonkeyMetadata : null;
       var filtered = scripts.filter(function (s) {
         if (s.enabled === false) return false;
         if (md && md.scriptMatches) return md.scriptMatches(s, url);
@@ -125,8 +125,8 @@
     getScripts(function (err, scripts) {
       if (err) { cb && cb(err); return; }
       parsed.forEach(function (s) {
-        var meta = (typeof wasMonkeyMetadata !== "undefined" && wasMonkeyMetadata.parseMetadata && s.code)
-          ? wasMonkeyMetadata.parseMetadata(s.code) : {};
+        var meta = (typeof WASMonkeyMetadata !== "undefined" && WASMonkeyMetadata.parseMetadata && s.code)
+          ? WASMonkeyMetadata.parseMetadata(s.code) : {};
         scripts.push({
           id: s.id || genId(),
           name: s.name || meta.name || "Imported script",
@@ -157,7 +157,7 @@
     importScripts: importScripts,
   };
 
-  try { window.wasMonkeyStorage = api; } catch (e) {}
-  try { if (typeof globalThis !== "undefined") globalThis.wasMonkeyStorage = api; } catch (e) {}
+  try { window.WASMonkeyStorage = api; } catch (e) {}
+  try { if (typeof globalThis !== "undefined") globalThis.WASMonkeyStorage = api; } catch (e) {}
   console.log(TAG + " storage layer loaded");
 })();

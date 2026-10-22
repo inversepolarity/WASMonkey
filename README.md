@@ -1,4 +1,4 @@
-# wasMonkey — Tampermonkey for WebAssembly
+# WASMonkey — Tampermonkey for WebAssembly
 
 A cross-browser (Chrome/Chromium, Firefox) extension that intercepts, inspects,
 and patches WebAssembly modules at load time.
@@ -18,13 +18,13 @@ and patches WebAssembly modules at load time.
 ## Install (manual / sideload)
 
 ### Chrome / Chromium / Edge / Brave
-1. Download `wasmonkey-chrome.zip` (or build: `node tools/build.mjs chrome`).
+1. Download `WASMonkey-chrome.zip` (or build: `node tools/build.mjs chrome`).
 2. Unzip to a folder.
 3. Open `chrome://extensions`, enable Developer mode.
 4. Click "Load unpacked" and select the folder.
 
 ### Firefox
-1. Download `wasmonkey-firefox.zip` (or build: `node tools/build.mjs firefox`).
+1. Download `WASMonkey-firefox.zip` (or build: `node tools/build.mjs firefox`).
 2. Open `about:debugging#/runtime/this-firefox`.
 3. Click "Load Temporary Add-on" and select `manifest.json` inside the unzipped folder.
 
@@ -32,41 +32,41 @@ and patches WebAssembly modules at load time.
 
 1. Click the toolbar icon → "Open dashboard".
 2. Go to **Scripts** → "New script" or "New from template".
-3. Write your script using the `wasMonkey` API (see below), set `@match`, grants.
+3. Write your script using the `WASMonkey` API (see below), set `@match`, grants.
 4. Click **Save** (or **Save & Reload Active Tab**).
 5. Navigate to a matching page; open DevTools console to see intercepted loads.
 
 ### Writing a script
 
 ```js
-// ==WasMonkeyScript==
+// ==WASMonkeyScript==
 // @name        My script
 // @match       *
 // @grant       patchBytes
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.onBeforeInstantiate((bytes, ctx) => {
-  wasMonkey.log("intercepted", bytes.byteLength, "bytes at", ctx.url);
+WASMonkey.onBeforeInstantiate((bytes, ctx) => {
+  WASMonkey.log("intercepted", bytes.byteLength, "bytes at", ctx.url);
   return bytes; // return patched bytes, or original to pass through
 });
 
-wasMonkey.onAfterInstantiate((exports, ctx) => {
-  wasMonkey.log("exports:", Object.keys(exports));
+WASMonkey.onAfterInstantiate((exports, ctx) => {
+  WASMonkey.log("exports:", Object.keys(exports));
 });
 ```
 
-### wasMonkey API (v1)
+### WASMonkey API (v1)
 
-- `wasMonkey.log(...args)`
-- `wasMonkey.getBinaryen()` / `wasMonkey.getWabt()` — lazy-load toolkits.
-- `wasMonkey.disassemble(bytes)` → WAT string; `wasMonkey.assemble(wat)` → bytes.
-- `wasMonkey.hashBytes(bytes)` → SHA-256 hex.
-- `wasMonkey.onBeforeInstantiate(cb)` — requires `@grant patchBytes`.
-- `wasMonkey.onAfterInstantiate(cb)` — requires `@grant patchExports` (or `patchBytes`).
-- `wasMonkey.storage.get/set` — per-script sandboxed storage.
-- `wasMonkey.utils` — `patchConstant`, LEB128 encode/decode, etc.
+- `WASMonkey.log(...args)`
+- `WASMonkey.getBinaryen()` / `WASMonkey.getWabt()` — lazy-load toolkits.
+- `WASMonkey.disassemble(bytes)` → WAT string; `WASMonkey.assemble(wat)` → bytes.
+- `WASMonkey.hashBytes(bytes)` → SHA-256 hex.
+- `WASMonkey.onBeforeInstantiate(cb)` — requires `@grant patchBytes`.
+- `WASMonkey.onAfterInstantiate(cb)` — requires `@grant patchExports` (or `patchBytes`).
+- `WASMonkey.storage.get/set` — per-script sandboxed storage.
+- `WASMonkey.utils` — `patchConstant`, LEB128 encode/decode, etc.
 
-See `docs/api-reference.md` and `src/wasmonkey.d.ts`.
+See `docs/api-reference.md` and `src/WASMonkey.d.ts`.
 
 ### Grants
 

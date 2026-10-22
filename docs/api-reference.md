@@ -1,7 +1,7 @@
-# wasMonkey Developer API Reference (v1)
+# WASMonkey Developer API Reference (v1)
 
-Scripts run in the page's MAIN world. The global `wasMonkey` object is provided
-to each script's execution context. The global `window.__wasMonkey` exposes the
+Scripts run in the page's MAIN world. The global `WASMonkey` object is provided
+to each script's execution context. The global `window.__WASMonkey` exposes the
 same surface for tooling.
 
 ## Grants (@grant)
@@ -16,7 +16,7 @@ relevant grant cannot register the corresponding hook.
 ## Interface
 
 ```ts
-interface WasMonkeyAPI {
+interface WASMonkeyAPI {
   readonly apiVersion: 1;
   log(...args): void;
   getBinaryen(): Promise<Binaryen>;
@@ -50,14 +50,14 @@ interface WasMonkeyAPI {
 ## Example
 
 ```js
-// ==WasMonkeyScript==
+// ==WASMonkeyScript==
 // @name        Example
 // @match       *
 // @grant       patchBytes
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.onBeforeInstantiate((bytes, ctx) => {
-  wasMonkey.log("intercepted", bytes.byteLength);
+WASMonkey.onBeforeInstantiate((bytes, ctx) => {
+  WASMonkey.log("intercepted", bytes.byteLength);
   return bytes;
 });
 ```

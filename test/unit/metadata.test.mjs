@@ -7,15 +7,15 @@ const require = createRequire(import.meta.url);
 const meta = require("../../src/metadata.js");
 
 test("parseMetadata extracts name/match/exclude/grants/version", () => {
-  const code = `// ==WasMonkeyScript==
+  const code = `// ==WASMonkeyScript==
 // @name        Foo
 // @match       https://example.com/*
 // @match       https://other.com/*
 // @exclude     https://example.com/admin/*
 // @grant       patchBytes patchExports
 // @version     1.2.3
-// ==/WasMonkeyScript==
-wasMonkey.log("hi");`;
+// ==/WASMonkeyScript==
+WASMonkey.log("hi");`;
   const m = meta.parseMetadata(code);
   assert.equal(m.name, "Foo");
   assert.deepEqual(m.match, ["https://example.com/*", "https://other.com/*"]);

@@ -1,4 +1,4 @@
-# wasMonkey — Full Project Roadmap (0 → 100)
+# WASMonkey — Full Project Roadmap (0 → 100)
 
 > A cross-browser extension for intercepting, inspecting, and patching WebAssembly modules at load time — "Tampermonkey for WASM."
 
@@ -11,7 +11,7 @@
 3. [Phase 2 — Script Model & Storage](#phase-2--script-model--storage)
 4. [Phase 3 — Management UI (Dashboard)](#phase-3--management-ui-dashboard)
 5. [Phase 4 — Binary Patch Toolkit Integration](#phase-4--binary-patch-toolkit-integration)
-6. [Phase 5 — Developer API (`wasMonkey` object)](#phase-5--developer-api-wasmonkey-object)
+6. [Phase 5 — Developer API (`WASMonkey` object)](#phase-5--developer-api-WASMonkey-object)
 7. [Phase 6 — Cross-Browser Compatibility](#phase-6--cross-browser-compatibility)
 8. [Phase 7 — CSP, Security & Edge Cases](#phase-7--csp-security--edge-cases)
 9. [Phase 8 — Debugging & Developer Experience](#phase-8--debugging--developer-experience)
@@ -68,19 +68,19 @@
 
 ## Phase 2 — Script Model & Storage
 
-**Goal:** Define what a "wasMonkey script" is, and persist/load them.
+**Goal:** Define what a "WASMonkey script" is, and persist/load them.
 
 - [x] Design script metadata header format (Tampermonkey-style):
 
 ```
-// ==WasMonkeyScript==
+// ==WASMonkeyScript==
 // @name        ...
 // @match       ...
 // @exclude     ...
 // @run-at      document-start | before-instantiate
 // @grant       patchBytes | patchExports | network
 // @version     ...
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 ```
 
 - [x] Parser for the metadata block (regex or small state machine). (`src/metadata.js`: parseMetadata, globToRegex, scriptMatches)
@@ -101,7 +101,7 @@ interface WasmScript {
 ```
 
 - [x] CRUD functions: `addScript`, `updateScript`, `deleteScript`, `toggleScript`, `listScriptsForUrl`. (`src/storage.js`)
-- [x] `isolated-bridge.js`: fetch matching scripts for current URL, serialize, pass to `MAIN` world via `CustomEvent`. (storage.listScriptsForUrl + wasmonkey:scripts event)
+- [x] `isolated-bridge.js`: fetch matching scripts for current URL, serialize, pass to `MAIN` world via `CustomEvent`. (storage.listScriptsForUrl + WASMonkey:scripts event)
 - [x] Handle `@exclude` precedence and multiple `@match` patterns (glob → regex conversion, matching Tampermonkey semantics where reasonable). (`metadata.js`: scriptMatches, globToRegex)
 - [x] Import/export scripts as JSON (for backup/sharing before a full registry exists — see Phase 11). (`storage.js`: exportScripts, importScripts)
 
@@ -121,7 +121,7 @@ interface WasmScript {
   - [x] Save / Save & Reload Active Tab (`saveScript`)
 - [x] "New script from template" flow (logger, export-wrapper, byte-patcher templates).
 - [x] Popup (toolbar button) UI:
-  - [x] Shows WASM modules detected on current page (count, sizes) via `window.__wasMonkeyModules`
+  - [x] Shows WASM modules detected on current page (count, sizes) via `window.__WASMonkeyModules`
   - [x] Shows which scripts are active on current page
   - [x] Quick enable/disable per site
   - [ ] "Report issue" / "View console log" shortcut (not yet)
@@ -136,9 +136,9 @@ interface WasmScript {
 
 **Goal:** Let scripts do more than wrap JS-visible exports — actually rewrite the WASM binary.
 
-- [x] Bundle **Binaryen.js** as a `web_accessible_resource`; lazy-load into `MAIN` world only when a script requests it (perf). (`vendor/binaryen/index.js` + `__wasMonkeyExtBaseURL`)
+- [x] Bundle **Binaryen.js** as a `web_accessible_resource`; lazy-load into `MAIN` world only when a script requests it (perf). (`vendor/binaryen/index.js` + `__WASMonkeyExtBaseURL`)
 - [x] Bundle **wabt.js** (wasm2wat/wat2wasm) for human-readable diffing/patching workflows. (`vendor/wabt/index.js`)
-- [x] Expose both via the `wasMonkey` API object rather than requiring every script to manage its own import. (`getBinaryen`/`getWabt`/`disassemble`/`assemble`)
+- [x] Expose both via the `WASMonkey` API object rather than requiring every script to manage its own import. (`getBinaryen`/`getWabt`/`disassemble`/`assemble`)
 - [x] Ship a small internal utility library for common patch primitives: (`src/patch-utils.js`)
   - [x] `findFunctionByExportName(module, name)`
   - [x] `replaceFunctionBody(module, index, newWatSnippet)` (groundwork)
@@ -149,20 +149,20 @@ interface WasmScript {
   1. **Export wrapping** (Phase 1 level, no binary knowledge needed)
   2. **Constant/byte patching** (medium, needs basic binary format knowledge)
   3. **Full IR rewriting via Binaryen/Wasabi** (advanced)
-- [x] Write 3–5 real example scripts demonstrating each tier: (`examples/01..05-*.wasmonkey.js`)
+- [x] Write 3–5 real example scripts demonstrating each tier: (`examples/01..05-*.WASMonkey.js`)
 
 **Exit criteria:** A script can take raw bytes, run them through Binaryen, modify a function body, re-emit, and have the patched module actually instantiate and run correctly in the page.
 
 ---
 
-## Phase 5 — Developer API (`wasMonkey` object)
+## Phase 5 — Developer API (`WASMonkey` object)
 
 **Goal:** Stabilize the API surface scripts are written against — this is your "GM_*" equivalent.
 
-- [x] Define and document the global `wasMonkey` object available inside script execution context:
+- [x] Define and document the global `WASMonkey` object available inside script execution context:
 
 ```ts
-interface WasMonkeyAPI {
+interface WASMonkeyAPI {
   log(...args: unknown[]): void;
   getBinaryen(): Promise<typeof Binaryen>;
   getWabt(): Promise<typeof Wabt>;
@@ -189,10 +189,10 @@ interface LoadContext {
 }
 ```
 
-- [x] Replace the ad hoc `globalThis.__wasmonkeyHooks` pattern from the prototype with this registration API. (beforeHooks/afterHooks + wasMonkey API)
-- [x] Enforce the `@grant` declarations from script metadata — a script without `@grant patchBytes` can't register `onBeforeInstantiate`; `onAfterInstantiate` requires `patchExports`/`patchBytes`. (makeWasMonkeyAPI)
-- [x] Version the API (`wasMonkey.apiVersion` = 1) so future breaking changes don't silently break old scripts.
-- [x] Write full API reference docs + JSDoc types (ship a `.d.ts` for script authors using TS). (`docs/api-reference.md`, `src/wasmonkey.d.ts`)
+- [x] Replace the ad hoc `globalThis.__WASMonkeyHooks` pattern from the prototype with this registration API. (beforeHooks/afterHooks + WASMonkey API)
+- [x] Enforce the `@grant` declarations from script metadata — a script without `@grant patchBytes` can't register `onBeforeInstantiate`; `onAfterInstantiate` requires `patchExports`/`patchBytes`. (makeWASMonkeyAPI)
+- [x] Version the API (`WASMonkey.apiVersion` = 1) so future breaking changes don't silently break old scripts.
+- [x] Write full API reference docs + JSDoc types (ship a `.d.ts` for script authors using TS). (`docs/api-reference.md`, `src/WASMonkey.d.ts`)
 
 **Exit criteria:** All example scripts from Phase 4 are rewritten against this stable API instead of ad hoc globals.
 
@@ -226,7 +226,7 @@ interface LoadContext {
 - [x] Sandbox script execution as much as the platform allows:
   - [x] Scripts run in page's `MAIN` world by necessity — documented as trust boundary. (`docs/threat-model.md`)
   - [x] Sandbox _user scripts from each other_ — per-script try/catch around code + hook invocations.
-- [x] Wrap every user hook invocation in try/catch with per-script error isolation + surfaced errors in the popup UI. (`window.__wasMonkeyErrors` + popup display)
+- [x] Wrap every user hook invocation in try/catch with per-script error isolation + surfaced errors in the popup UI. (`window.__WASMonkeyErrors` + popup display)
 - [x] Add a "panic switch": global disable toggle + per-site quick-disable. (isolated-bridge + popup "Disable on this site")
 - [x] Threat-model doc. (`docs/threat-model.md`)
 
@@ -243,7 +243,7 @@ interface LoadContext {
 - [x] **Live inspector** in the popup: modules with exports, memory/table sizes, dump-exports button.
 - [x] Source map / DWARF awareness: viewer uses `readDebugNames: true` so function names surface when present.
 - [x] "Record mode": `recordMode` setting → page-hook logs stack + SHA-256 hash per load.
-- [x] Error overlay: popup surfaces recent `__wasMonkeyErrors` with messages.
+- [x] Error overlay: popup surfaces recent `__WASMonkeyErrors` with messages.
 
 **Exit criteria:** A user with no prior WASM internals experience can open the dashboard, inspect a target site's module, find an export, and write a working export-wrapping script without leaving the extension UI.
 
@@ -253,7 +253,7 @@ interface LoadContext {
 
 **Goal:** Don't make every page load slower by re-running Binaryen on every WASM fetch.
 
-- [x] Hash incoming bytes (`SHA-256` via `crypto.subtle`) before patching. (`window.__wasMonkey.hashBytes` + cache key)
+- [x] Hash incoming bytes (`SHA-256` via `crypto.subtle`) before patching. (`window.__WASMonkey.hashBytes` + cache key)
 - [x] Cache `{hash + scriptVersion} → patchedBytes` in `IndexedDB`. (`openPatchCache`/`cacheGet`/`cacheSet` in page-hook.js)
 - [x] Skip the patch pipeline entirely if no enabled script matches the current URL (fast-path passthrough). (beforeHooks empty → no byte read in quiet mode; hooks absent → pass-through)
 - [x] Lazy-load Binaryen/wabt only when a script actually calls `getBinaryen()`/`getWabt()`. (dynamic import on first call, cached)
@@ -289,7 +289,7 @@ interface LoadContext {
 
 **Goal:** The Tampermonkey analogy only pays off fully once there's a script-sharing culture.
 
-- [x] Script export format: single `.wasmonkey.js` file with metadata header (Phase 2) — shareable as gist/file. (`examples/`, export button)
+- [x] Script export format: single `.WASMonkey.js` file with metadata header (Phase 2) — shareable as gist/file. (`examples/`, export button)
 - [x] "Import from URL" in the dashboard (paste raw gist/file URL → fetch, parse, preview metadata, install). (`import-from-url` button)
 - [ ] Optional: community index site (gated behind adoption signal — not built).
 - [x] Script signing/checksum display (SHA-256 prefix shown in editor).
@@ -326,7 +326,7 @@ interface LoadContext {
 - [ ] **Visual function graph** (call graph) for a loaded module, rendered in the dashboard.
 - [ ] **AI-assisted patch suggestions**: given a disassembled function and a natural-language goal ("make this check always return true"), suggest a Binaryen patch — clearly labeled as experimental/best-effort.
 - [ ] Telemetry (strictly opt-in, local-first): aggregate anonymized "which sites use WASM + how" stats to help prioritize compatibility fixes — only if genuinely opt-in and transparent.
-- [ ] Explore a companion CLI (`wasmonkey-cli`) for authoring/testing scripts against local `.wasm` files outside the browser, for a faster dev loop.
+- [ ] Explore a companion CLI (`WASMonkey-cli`) for authoring/testing scripts against local `.wasm` files outside the browser, for a faster dev loop.
 
 **Exit criteria:** Not really "exit" — this is the ongoing roadmap once v1.0 is stable and has real users providing feedback.
 

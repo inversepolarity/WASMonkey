@@ -4,7 +4,7 @@
  * Completes the Phase 0 §5 open item: load the vendored *browser* builds of
  * wabt (UMD classic script) and Binaryen (ESM, top-level await) inside a page
  * under a given CSP profile, run a real parse→emit→instantiate roundtrip with
- * each, and exercise the wasMonkey hook's lazy-load API (getWabt/getBinaryen).
+ * each, and exercise the WASMonkey hook's lazy-load API (getWabt/getBinaryen).
  *
  * Every step records {step, ok, ms, error}; results POST to /collect as
  * stage:"spike-done" (or are returned directly when the runner drives this
@@ -15,7 +15,7 @@
  *   b) retry with the server-provided CSP nonce (<meta name="wm-nonce">),
  *      emulating a nonce-aware site loader (e.g. Google Earth's own bootstrap)
  * In extension mode the hook additionally exposes chrome-extension:// WAR
- * URLs via window.__wasMonkeyExtBaseURL; step hookApiGetWabt/hookApiGetBinaryen
+ * URLs via window.__WASMonkeyExtBaseURL; step hookApiGetWabt/hookApiGetBinaryen
  * exercise that path when available.
  */
 (function () {
@@ -53,8 +53,8 @@
   window.__wmSpike = async function (profile) {
     var res = {
       profile: profile || "unknown",
-      hookInstalled: !!window.__wasMonkeyInstalled,
-      extBase: window.__wasMonkeyExtBaseURL || null,
+      hookInstalled: !!window.__WASMonkeyInstalled,
+      extBase: window.__WASMonkeyExtBaseURL || null,
       ua: navigator.userAgent,
       steps: [],
     };
@@ -125,15 +125,15 @@
     }
 
     // ---- hook lazy-load API (docs/feasibility.md §7.6 contract) ----
-    if (window.__wasMonkey) {
+    if (window.__WASMonkey) {
       await step("hookApiGetWabt", async function () {
-        var w = await window.__wasMonkey.getWabt();
+        var w = await window.__WASMonkey.getWabt();
         if (!w || typeof w.parseWat !== "function") throw new Error("getWabt() did not resolve a usable module");
         var m = w.parseWat("hook.wat", WAT);
         return "getWabt() ok, toBinary " + m.toBinary({}).buffer.length + " bytes";
       });
       await step("hookApiGetBinaryen", async function () {
-        var b = await window.__wasMonkey.getBinaryen();
+        var b = await window.__WASMonkey.getBinaryen();
         if (!b || typeof b.parseText !== "function") throw new Error("getBinaryen() did not resolve a usable module");
         var mod = b.parseText(WAT);
         return "getBinaryen() ok, emitBinary " + mod.emitBinary().length + " bytes";
@@ -143,7 +143,7 @@
       res.steps.push({ step: "hookApiGetBinaryen", ok: false, error: "hook not installed" });
     }
 
-    res.logs = (window.__wasMonkeyLogs || []).slice();
+    res.logs = (window.__WASMonkeyLogs || []).slice();
     return res;
   };
 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "wasMonkey",
+  "name": "WASMonkey",
   "version": "0.1.0",
   "description": "Tampermonkey for WebAssembly: intercept, inspect, and patch WASM modules at load time.",
   "permissions": ["storage", "scripting", "declarativeNetRequest"],
@@ -22,7 +22,7 @@
   "options_page": "src/ui/options.html",
   "action": {
     "default_popup": "src/ui/popup.html",
-    "default_title": "wasMonkey"
+    "default_title": "WASMonkey"
   },
   "web_accessible_resources": [
     {
@@ -32,7 +32,7 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "id": "wasmonkey@example.com",
+      "id": "WASMonkey@example.com",
       "strict_min_version": "109.0",
       "data_collection_permissions": {
         "required": ["none"]

@@ -94,7 +94,7 @@
         "hookApiGetWabt": true,
         "hookApiGetBinaryen": true
       },
-      "wasMonkeyConsoleLines": 11,
+      "WASMonkeyConsoleLines": 11,
       "consoleParity": {
         "collectLogs": 5,
         "matchedInConsole": 5,
@@ -157,7 +157,7 @@
         "hookApiGetWabt": false,
         "hookApiGetBinaryen": false
       },
-      "wasMonkeyConsoleLines": 8,
+      "WASMonkeyConsoleLines": 8,
       "consoleParity": {
         "collectLogs": 3,
         "matchedInConsole": 3,
@@ -248,7 +248,7 @@
         "hookApiGetWabt": true,
         "hookApiGetBinaryen": true
       },
-      "wasMonkeyConsoleLines": 11,
+      "WASMonkeyConsoleLines": 11,
       "consoleParity": {
         "collectLogs": 5,
         "matchedInConsole": 5,
@@ -304,7 +304,7 @@
         "hookApiGetWabt": false,
         "hookApiGetBinaryen": false
       },
-      "wasMonkeyConsoleLines": 8,
+      "WASMonkeyConsoleLines": 8,
       "consoleParity": {
         "collectLogs": 3,
         "matchedInConsole": 3,
@@ -388,7 +388,7 @@
         "hookApiGetWabt": true,
         "hookApiGetBinaryen": true
       },
-      "wasMonkeyConsoleLines": 11,
+      "WASMonkeyConsoleLines": 11,
       "consoleParity": {
         "collectLogs": 5,
         "matchedInConsole": 5,
@@ -472,7 +472,7 @@
         "hookApiGetWabt": true,
         "hookApiGetBinaryen": true
       },
-      "wasMonkeyConsoleLines": 11,
+      "WASMonkeyConsoleLines": 11,
       "consoleParity": {
         "collectLogs": 5,
         "matchedInConsole": 5,
@@ -528,7 +528,7 @@
         "hookApiGetWabt": false,
         "hookApiGetBinaryen": false
       },
-      "wasMonkeyConsoleLines": 8,
+      "WASMonkeyConsoleLines": 8,
       "consoleParity": {
         "collectLogs": 3,
         "matchedInConsole": 3,
@@ -612,7 +612,7 @@
         "hookApiGetWabt": true,
         "hookApiGetBinaryen": true
       },
-      "wasMonkeyConsoleLines": 11,
+      "WASMonkeyConsoleLines": 11,
       "consoleParity": {
         "collectLogs": 5,
         "matchedInConsole": 5,
@@ -696,7 +696,7 @@
         "hookApiGetWabt": true,
         "hookApiGetBinaryen": true
       },
-      "wasMonkeyConsoleLines": 11,
+      "WASMonkeyConsoleLines": 11,
       "consoleParity": {
         "collectLogs": 5,
         "matchedInConsole": 5,
@@ -759,7 +759,7 @@
         "hookApiGetWabt": false,
         "hookApiGetBinaryen": false
       },
-      "wasMonkeyConsoleLines": 8,
+      "WASMonkeyConsoleLines": 8,
       "consoleParity": {
         "collectLogs": 3,
         "matchedInConsole": 3,
@@ -822,7 +822,7 @@
         "hookApiGetWabt": false,
         "hookApiGetBinaryen": false
       },
-      "wasMonkeyConsoleLines": 3,
+      "WASMonkeyConsoleLines": 3,
       "consoleParity": {
         "collectLogs": 0,
         "matchedInConsole": 0,
@@ -840,19 +840,19 @@
           "level": "error",
           "source": "security",
           "text": "Loading the script 'http://127.0.0.1:33505/vendor/wabt/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FWASMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         },
         {
           "level": "error",
           "source": "security",
           "text": "Loading the script 'http://127.0.0.1:33505/vendor/wabt/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FWASMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         },
         {
           "level": "error",
           "source": "security",
           "text": "Loading the script 'http://127.0.0.1:33505/vendor/binaryen/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
-          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fsuraj%2Fevenzero%2F_lab%2FWASMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
         },
         {
           "level": "error",
@@ -909,7 +909,7 @@
         "hookApiGetWabt": false,
         "hookApiGetBinaryen": false
       },
-      "wasMonkeyConsoleLines": 8,
+      "WASMonkeyConsoleLines": 8,
       "consoleParity": {
         "collectLogs": 3,
         "matchedInConsole": 3,

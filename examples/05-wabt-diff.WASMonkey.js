@@ -1,15 +1,15 @@
-// ==WasMonkeyScript==
+// ==WASMonkeyScript==
 // @name        wabt disassemble + log
 // @match       *
 // @grant       patchBytes
 // @version     1.0
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.onBeforeInstantiate(async (bytes, ctx) => {
-  const wabt = await wasMonkey.getWabt();
+WASMonkey.onBeforeInstantiate(async (bytes, ctx) => {
+  const wabt = await WASMonkey.getWabt();
   if (!wabt) return bytes;
   const mod = wabt.readWasm(bytes, { readDebugNames: true });
   const wat = mod.toText({ foldExprs: false });
-  wasMonkey.log("WAT preview:", wat.slice(0, 200));
+  WASMonkey.log("WAT preview:", wat.slice(0, 200));
   return bytes;
 });

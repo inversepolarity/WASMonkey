@@ -54,21 +54,21 @@ function renderList() {
 
 function escape(s) { return String(s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-const DEFAULT_CODE = `// ==WasMonkeyScript==
+const DEFAULT_CODE = `// ==WASMonkeyScript==
 // @name        My script
 // @match       *
 // @grant       patchBytes
-// ==/WasMonkeyScript==
+// ==/WASMonkeyScript==
 
-wasMonkey.log("hello from wasMonkey script");
+WASMonkey.log("hello from WASMonkey script");
 
-wasMonkey.onBeforeInstantiate((bytes, ctx) => {
-  wasMonkey.log("intercepted", bytes.byteLength, "bytes");
+WASMonkey.onBeforeInstantiate((bytes, ctx) => {
+  WASMonkey.log("intercepted", bytes.byteLength, "bytes");
   return bytes; // return patched bytes (or original to pass through)
 });
 
-wasMonkey.onAfterInstantiate((exports, ctx) => {
-  wasMonkey.log("exports:", Object.keys(exports));
+WASMonkey.onAfterInstantiate((exports, ctx) => {
+  WASMonkey.log("exports:", Object.keys(exports));
 });
 `;
 
@@ -133,6 +133,7 @@ function saveScript(reload) {
     }
     setScripts(scripts, () => {
       renderList();
+      showView("scripts");
       if (reload) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           if (tabs[0]) chrome.tabs.reload(tabs[0].id);
@@ -155,9 +156,9 @@ $("new-script").addEventListener("click", () => editScript(null));
 $("new-from-template").addEventListener("click", () => {
   const choice = prompt("Template: logger / export-wrapper / byte-patcher");
   const templates = {
-    "logger": `// ==WasMonkeyScript==\n// @name        Logger\n// @match       *\n// @grant       patchBytes\n// ==/WasMonkeyScript==\n\nwasMonkey.onBeforeInstantiate((bytes, ctx) => {\n  wasMonkey.log("WASM load", bytes.byteLength, "bytes at", ctx.url);\n  return bytes;\n});\n`,
-    "export-wrapper": `// ==WasMonkeyScript==\n// @name        Export wrapper\n// @match       *\n// @grant       patchBytes patchExports\n// ==/WasMonkeyScript==\n\nwasMonkey.onAfterInstantiate((exports, ctx) => {\n  if (exports && typeof exports.add === "function") {\n    const orig = exports.add;\n    exports.add = function (a, b) { wasMonkey.log("add called", a, b); return orig(a, b); };\n  }\n});\n`,
-    "byte-patcher": `// ==WasMonkeyScript==\n// @name        Byte patcher\n// @match       *\n// @grant       patchBytes\n// ==/WasMonkeyScript==\n\nwasMonkey.onBeforeInstantiate((bytes, ctx) => {\n  // Example: return bytes unmodified. Modify with Binaryen for real patches.\n  return bytes;\n});\n`,
+    "logger": `// ==WASMonkeyScript==\n// @name        Logger\n// @match       *\n// @grant       patchBytes\n// ==/WASMonkeyScript==\n\nWASMonkey.onBeforeInstantiate((bytes, ctx) => {\n  WASMonkey.log("WASM load", bytes.byteLength, "bytes at", ctx.url);\n  return bytes;\n});\n`,
+    "export-wrapper": `// ==WASMonkeyScript==\n// @name        Export wrapper\n// @match       *\n// @grant       patchBytes patchExports\n// ==/WASMonkeyScript==\n\nWASMonkey.onAfterInstantiate((exports, ctx) => {\n  if (exports && typeof exports.add === "function") {\n    const orig = exports.add;\n    exports.add = function (a, b) { WASMonkey.log("add called", a, b); return orig(a, b); };\n  }\n});\n`,
+    "byte-patcher": `// ==WASMonkeyScript==\n// @name        Byte patcher\n// @match       *\n// @grant       patchBytes\n// ==/WASMonkeyScript==\n\nWASMonkey.onBeforeInstantiate((bytes, ctx) => {\n  // Example: return bytes unmodified. Modify with Binaryen for real patches.\n  return bytes;\n});\n`,
   };
   const code = templates[choice];
   if (code) {
@@ -192,7 +193,7 @@ $("import-from-url").addEventListener("click", async () => {
     const text = await res.text();
     // parse metadata for preview
     let meta = { name: "Imported", match: ["*"], grants: [] };
-    try { if (typeof wasMonkeyMetadata !== "undefined") meta = wasMonkeyMetadata.parseMetadata(text); } catch (e) {}
+    try { if (typeof WASMonkeyMetadata !== "undefined") meta = WASMonkeyMetadata.parseMetadata(text); } catch (e) {}
     if (!confirm("Import script '" + meta.name + "' with matches: " + meta.match.join(", ") + "?")) return;
     getScripts((scripts) => {
       scripts.push({
@@ -220,7 +221,7 @@ $("export-scripts").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(scripts, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "wasmonkey-scripts.json"; a.click();
+    a.href = url; a.download = "WASMonkey-scripts.json"; a.click();
     URL.revokeObjectURL(url);
   });
 });
@@ -228,15 +229,15 @@ $("export-scripts").addEventListener("click", () => {
 // Settings
 function loadSettings() {
   if (!storage()) return;
-  storage().get({ wasMonkeyEnabled: true, logVerbosity: "normal", recordMode: false, cspRelaxation: false }, (res) => {
-    $("global-enabled").checked = res.wasMonkeyEnabled !== false;
+  storage().get({ WASMonkeyEnabled: true, logVerbosity: "normal", recordMode: false, cspRelaxation: false }, (res) => {
+    $("global-enabled").checked = res.WASMonkeyEnabled !== false;
     $("log-verbosity").value = res.logVerbosity || "normal";
     $("record-mode").checked = res.recordMode === true;
     $("csp-relax").checked = res.cspRelaxation === true;
   });
 }
 $("global-enabled").addEventListener("change", () => {
-  if (storage()) storage().set({ wasMonkeyEnabled: $("global-enabled").checked });
+  if (storage()) storage().set({ WASMonkeyEnabled: $("global-enabled").checked });
 });
 $("log-verbosity").addEventListener("change", () => {
   if (storage()) storage().set({ logVerbosity: $("log-verbosity").value });

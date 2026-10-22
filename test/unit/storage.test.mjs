@@ -24,16 +24,16 @@ globalThis.chrome = chrome;
 globalThis.window = globalThis;
 // load metadata first so storage can use it
 const meta = require("../../src/metadata.js");
-globalThis.wasMonkeyMetadata = meta;
+globalThis.WASMonkeyMetadata = meta;
 
 const storageMod = require("../../src/storage.js");
-const api = globalThis.wasMonkeyStorage;
+const api = globalThis.WASMonkeyStorage;
 
 function reset() { store.scripts = []; }
 
 test("addScript + getScripts", async () => {
   reset();
-  await new Promise((res) => api.addScript({ name: "T", code: "// ==WasMonkeyScript==\n// @name T\n// @match *\n// ==/WasMonkeyScript==\n", match: ["*"] }, (e, s) => { assert.equal(e, null); assert.equal(s.name, "T"); res(); }));
+  await new Promise((res) => api.addScript({ name: "T", code: "// ==WASMonkeyScript==\n// @name T\n// @match *\n// ==/WASMonkeyScript==\n", match: ["*"] }, (e, s) => { assert.equal(e, null); assert.equal(s.name, "T"); res(); }));
   const scripts = await new Promise((res) => api.getScripts((e, s) => res(s)));
   assert.equal(scripts.length, 1);
 });

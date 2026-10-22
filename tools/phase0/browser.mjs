@@ -8,7 +8,7 @@
  * `al2023.tar.br`, plus bundled fonts and SwiftShader.
  *
  * The extracted browser lives OUTSIDE the repo (default
- * ~/.cache/wasmonkey/chromium-153) so no browser bytes ever enter git.
+ * ~/.cache/WASMonkey/chromium-153) so no browser bytes ever enter git.
  *
  * resolveBrowser() returns { executablePath, env, version, cacheDir } and
  * downloads/extracts on first use (idempotent afterwards).
@@ -26,7 +26,7 @@ const execFileP = promisify(execFile);
 export const PKG_VERSION = "153.0.0";
 const TARBALL_URL = `https://registry.npmjs.org/@sparticuz/chromium/-/chromium-${PKG_VERSION}.tgz`;
 export const DEFAULT_CACHE_DIR = path.join(
-  process.env.WASMONKEY_BROWSER_CACHE || path.join(os.homedir(), ".cache", "wasmonkey"),
+  process.env.WASMonkey_BROWSER_CACHE || path.join(os.homedir(), ".cache", "WASMonkey"),
   `chromium-${PKG_VERSION.split(".")[0]}`
 );
 

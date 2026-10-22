@@ -1,7 +1,7 @@
 /**
  * matrix.mjs — automated WASM interception matrix runner.
  *
- * Runs the wasMonkey hook against every CSP fixture profile (surveyed-site
+ * Runs the WASMonkey hook against every CSP fixture profile (surveyed-site
  * replicas + generic policy classes, see serve.mjs) plus the original local
  * harness, captures MAIN-world console output over CDP, cross-checks it
  * against the page's own /collect report, and records per-entry-point results
@@ -38,7 +38,7 @@ const URL_LIST = argVal("url-list", null);
 const OUT_JSON = path.resolve(REPO_ROOT, argVal("out", "test/results/interception-matrix.json"));
 const OUT_MD = OUT_JSON.replace(/\.json$/, ".md");
 
-const KIND_RE = /\[wasMonkey\] (compile|instantiateStreaming|instantiate|compileStreaming|Module ctor): (\d+) bytes/;
+const KIND_RE = /\[WASMonkey\] (compile|instantiateStreaming|instantiate|compileStreaming|Module ctor): (\d+) bytes/;
 const EXPECTED_KINDS = ["compile", "instantiate", "instantiateStreaming", "compileStreaming", "Module ctor"];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -93,7 +93,7 @@ async function runFixture({ browser, srv, base, mode, url, profile, waitStage })
   }
   await sleep(700); // let async hook logs (streaming clones) flush into CDP
 
-  const wmLines = cap.wasMonkeyLines();
+  const wmLines = cap.WASMonkeyLines();
   const kinds = kindsFromLines(wmLines);
   const entries = payload.entries || [];
   const entryByName = Object.fromEntries(entries.map((e) => [e.entry, e]));
@@ -109,7 +109,7 @@ async function runFixture({ browser, srv, base, mode, url, profile, waitStage })
       kindsSeen: [...kinds.keys()],
       kindCounts: Object.fromEntries(kinds),
       allExpectedKinds: EXPECTED_KINDS.every((k) => kinds.has(k)),
-      wasMonkeyConsoleLines: wmLines.length,
+      WASMonkeyConsoleLines: wmLines.length,
     },
     consoleParity: consoleParity(payload.logs, wmLines.map((t) => t)),
     cspViolations: cap.security.slice(0, 12),
@@ -125,14 +125,14 @@ async function runLiveUrl({ browser, mode, name, url }) {
   const page = await browser.newPage();
   const cap = await instrumentPage(page);
   if (mode === "cdp-inject") await injectHook(page);
-  const rec = { name, url, navError: null, hookInstalled: null, wasMonkeyConsoleLines: 0, kindsSeen: [] };
+  const rec = { name, url, navError: null, hookInstalled: null, WASMonkeyConsoleLines: 0, kindsSeen: [] };
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 25000 });
     await sleep(10000); // dwell: let site WASM loads fire
-    const wm = cap.wasMonkeyLines();
+    const wm = cap.WASMonkeyLines();
     const kinds = kindsFromLines(wm);
-    rec.hookInstalled = await page.evaluate(() => !!window.__wasMonkeyInstalled).catch(() => null);
-    rec.wasMonkeyConsoleLines = wm.length;
+    rec.hookInstalled = await page.evaluate(() => !!window.__WASMonkeyInstalled).catch(() => null);
+    rec.WASMonkeyConsoleLines = wm.length;
     rec.kindsSeen = [...kinds.keys()];
     rec.title = await page.title().catch(() => null);
   } catch (e) {
@@ -167,7 +167,7 @@ console.log("[matrix] running local harness (test/harness.html)…");
     .waitFor((p) => p.stage === "done" || p.stage === "error" || p.stage === "timeout", 15000)
     .catch(() => ({ stage: "no-report" }));
   await sleep(700);
-  const wmLines = cap.wasMonkeyLines();
+  const wmLines = cap.WASMonkeyLines();
   const kinds = kindsFromLines(wmLines);
   results.push({
     profile: "local-harness",
@@ -176,15 +176,15 @@ console.log("[matrix] running local harness (test/harness.html)…");
     stage: payload.stage,
     hookInstalled: !!payload.hookInstalled,
     logsFromCollect: payload.logs || [],
-    wasMonkeyConsoleLines: wmLines.length,
+    WASMonkeyConsoleLines: wmLines.length,
     // primary (non-stack) hook lines as captured by the CDP console channel
-    wasMonkeyPrimaryLines: wmLines.filter((l) => !l.includes("[wasMonkey] stack")),
+    WASMonkeyPrimaryLines: wmLines.filter((l) => !l.includes("[WASMonkey] stack")),
     kindsSeen: [...kinds.keys()],
     intercepted: {
       kindsSeen: [...kinds.keys()],
       kindCounts: Object.fromEntries(kinds),
       allExpectedKinds: EXPECTED_KINDS.every((k) => kinds.has(k)),
-      wasMonkeyConsoleLines: wmLines.length,
+      WASMonkeyConsoleLines: wmLines.length,
     },
     consoleParity: consoleParity(payload.logs, wmLines),
     errors: payload.errors || [],
@@ -219,7 +219,7 @@ if (URL_LIST) {
     process.stdout.write(`[matrix] live ${name} … `);
     const rec = await runLiveUrl({ browser, mode, name: rest.length ? name : new URL(url).hostname, url });
     realSiteAttempts.push(rec);
-    console.log(rec.navError ? `navError: ${rec.navError}` : `hook=${rec.hookInstalled} lines=${rec.wasMonkeyConsoleLines}`);
+    console.log(rec.navError ? `navError: ${rec.navError}` : `hook=${rec.hookInstalled} lines=${rec.WASMonkeyConsoleLines}`);
   }
 }
 
@@ -273,7 +273,7 @@ if (realSiteAttempts.length) {
   md.push("| Name | URL | Result |");
   md.push("|------|-----|--------|");
   for (const r of realSiteAttempts) {
-    md.push(`| ${r.name} | ${r.url} | ${r.navError ? "❌ " + r.navError : `hook=${r.hookInstalled}, ${r.wasMonkeyConsoleLines} wasMonkey lines`} |`);
+    md.push(`| ${r.name} | ${r.url} | ${r.navError ? "❌ " + r.navError : `hook=${r.hookInstalled}, ${r.WASMonkeyConsoleLines} WASMonkey lines`} |`);
   }
 }
 md.push("");

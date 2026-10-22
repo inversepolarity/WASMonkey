@@ -7,7 +7,7 @@ async function main() {
     const res = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       world: "MAIN",
-      func: () => (window.__wasMonkeyModules || []).map(m => ({ byteLength: m.byteLength, url: m.url })),
+      func: () => (window.__WASMonkeyModules || []).map(m => ({ byteLength: m.byteLength, url: m.url })),
     });
     mods = (res && res[0] && res[0].result) || [];
   } catch (e) { mods = []; }
@@ -20,7 +20,7 @@ async function main() {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         world: "MAIN",
-        func: (i) => { const m = (window.__wasMonkeyModules || [])[i]; console.log("[wasMonkey] module", i, m); },
+        func: (i) => { const m = (window.__WASMonkeyModules || [])[i]; console.log("[WASMonkey] module", i, m); },
         args: [idx],
       });
     });
@@ -32,7 +32,7 @@ async function main() {
     const res = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       world: "MAIN",
-      func: () => (window.__wasMonkeyErrors || []).slice(-5),
+      func: () => (window.__WASMonkeyErrors || []).slice(-5),
     });
     errs = (res && res[0] && res[0].result) || [];
   } catch (e) { errs = []; }

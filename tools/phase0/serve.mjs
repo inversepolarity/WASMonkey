@@ -1,5 +1,5 @@
 /**
- * serve.mjs — local fixture server for the wasMonkey Phase 0 follow-up run.
+ * serve.mjs — local fixture server for the WASMonkey Phase 0 follow-up run.
  *
  * Responsibilities:
  *  - Static file serving of the repo root (harness, battery/spike scripts,
@@ -200,7 +200,7 @@ export function createServer({ quiet = false } = {}) {
         const csp = typeof profile.csp === "function" ? profile.csp(nonce) : profile.csp;
         if (csp) headers["Content-Security-Policy"] = csp;
         const page = fixturePage({
-          title: kind === "site" ? `wasMonkey battery — ${name}` : `wasMonkey toolkit spike — ${name}`,
+          title: kind === "site" ? `WASMonkey battery — ${name}` : `WASMonkey toolkit spike — ${name}`,
           profileName: name,
           nonce,
           scriptSrc: kind === "site" ? "/test/battery.js" : "/test/spike.js",

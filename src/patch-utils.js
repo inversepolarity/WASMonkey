@@ -1,7 +1,7 @@
 (function (global) {
   "use strict";
-  // Common WASM patch primitives. Exposed as global wasMonkeyUtils and
-  // wasMonkey.utils (when the hook is present).
+  // Common WASM patch primitives. Exposed as global WASMonkeyUtils and
+  // WASMonkey.utils (when the hook is present).
 
   function findFunctionByExportName(moduleObj, name) {
     // moduleObj: a Binaryen Module or a WebAssembly.Module. For Binaryen modules,
@@ -123,8 +123,8 @@
     decodeSleb128: decodeSleb128,
   };
 
-  try { global.wasMonkeyUtils = api; } catch (e) {}
-  try { if (typeof window !== "undefined") window.wasMonkeyUtils = api; } catch (e) {}
-  try { if (typeof self !== "undefined") self.wasMonkeyUtils = api; } catch (e) {}
+  try { global.WASMonkeyUtils = api; } catch (e) {}
+  try { if (typeof window !== "undefined") window.WASMonkeyUtils = api; } catch (e) {}
+  try { if (typeof self !== "undefined") self.WASMonkeyUtils = api; } catch (e) {}
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);
