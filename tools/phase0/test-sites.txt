@@ -1,0 +1,6 @@
+figma https://www.figma.com/
+google-earth https://earth.google.com/web/
+mdn https://developer.mozilla.org/en-US/docs/WebAssembly
+discord https://discord.com/app
+google-meet https://meet.google.com/
+crazygames https://www.crazygames.com/

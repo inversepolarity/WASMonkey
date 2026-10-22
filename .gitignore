@@ -1,0 +1,12 @@
+# Dependencies and provisioning artifacts (recreatable via tools/phase0 scripts)
+node_modules/
+vendor/
+*.tgz
+
+# Browser cache lives outside the repo (~/.cache/wasmonkey), but ignore any
+# stray local copies just in case.
+.cache/
+
+# Misc
+.DS_Store
+*.log

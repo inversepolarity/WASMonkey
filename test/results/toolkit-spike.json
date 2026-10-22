@@ -1,0 +1,923 @@
+{
+  "summary": {
+    "runAt": "2026-10-22T07:31:22.344Z",
+    "tool": "tools/phase0/spike.mjs",
+    "browser": {
+      "version": "Chromium 153.0.8010.0",
+      "mode": "cdp-inject",
+      "note": "browser build has no extensions subsystem (chrome-headless_shell); src/page-hook.js injected into MAIN world at document_start via Page.addScriptToEvaluateOnNewDocument (the same renderer mechanism used for world:MAIN content scripts). Re-run with --mode extension against full Chrome/Chromium to exercise manifest plumbing."
+    },
+    "hook": {
+      "path": "src/page-hook.js",
+      "sha256": "4e5617cd070b3d6052d4a16dc846e0c8316b3b6a4d621406a167830cc8794e55"
+    },
+    "counts": {
+      "profilesRun": 12,
+      "hookInstalled": 12,
+      "wabtFullRoundtripOk": 6,
+      "binaryenFullRoundtripOk": 6,
+      "consoleParityOk": 12
+    }
+  },
+  "results": [
+    {
+      "profile": "figma",
+      "kind": "site",
+      "label": "Figma (replica)",
+      "csp": "default-src * blob: data: filesystem:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https: blob: data:; worker-src 'self' blob:; connect-src *; img-src * data: blob:; style-src * 'unsafe-inline'",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 13,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": true,
+          "ms": 10,
+          "detail": "module ready"
+        },
+        {
+          "step": "wabtParseWat",
+          "ok": true,
+          "ms": 7,
+          "detail": "34 bytes emitted"
+        },
+        {
+          "step": "wabtOutputInstantiate",
+          "ok": true,
+          "ms": 0,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": true,
+          "ms": 554,
+          "detail": "ESM module initialized (embedded wasm compiled)"
+        },
+        {
+          "step": "binaryenParseText",
+          "ok": true,
+          "ms": 34,
+          "detail": "34 bytes emitted, validate()=1"
+        },
+        {
+          "step": "binaryenOutputInstantiate",
+          "ok": true,
+          "ms": 1,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": true,
+          "ms": 8,
+          "detail": "getWabt() ok, toBinary 34 bytes"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": true,
+          "ms": 2,
+          "detail": "getBinaryen() ok, emitBinary 34 bytes"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": true,
+        "wabtParseWat": true,
+        "wabtOutputInstantiate": true,
+        "binaryenImport": true,
+        "binaryenParseText": true,
+        "binaryenOutputInstantiate": true,
+        "hookApiGetWabt": true,
+        "hookApiGetBinaryen": true
+      },
+      "wasMonkeyConsoleLines": 11,
+      "consoleParity": {
+        "collectLogs": 5,
+        "matchedInConsole": 5,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "google-earth",
+      "kind": "site",
+      "label": "Google Earth (replica)",
+      "csp": "script-src 'nonce-<per-response-nonce>' 'unsafe-inline'; worker-src 'self'; object-src 'none'; base-uri 'self'",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": false,
+          "ms": 1,
+          "error": "script load failed/blocked: /vendor/wabt/index.js"
+        },
+        {
+          "step": "wabtScriptLoadWithNonce",
+          "ok": true,
+          "ms": 10,
+          "detail": "nonce"
+        },
+        {
+          "step": "wabtInit",
+          "ok": false,
+          "ms": 8,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-17r47r0wvpgmvj81h5p' 'unsafe-inline'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "binaryenImport",
+          "ok": false,
+          "ms": 490,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-17r47r0wvpgmvj81h5p' 'unsafe-inline'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": false,
+          "ms": 2,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-17r47r0wvpgmvj81h5p' 'unsafe-inline'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": false,
+          "ms": 1,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-17r47r0wvpgmvj81h5p' 'unsafe-inline'\".). Build with -sASSERTIONS for more info."
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": false,
+        "wabtScriptLoadWithNonce": true,
+        "wabtInit": false,
+        "binaryenImport": false,
+        "hookApiGetWabt": false,
+        "hookApiGetBinaryen": false
+      },
+      "wasMonkeyConsoleLines": 7,
+      "consoleParity": {
+        "collectLogs": 3,
+        "matchedInConsole": 3,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/vendor/wabt/index.js' violates the following Content Security Policy directive: \"script-src 'nonce-n-17r47r0wvpgmvj81h5p' 'unsafe-inline'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
+          "url": "http://127.0.0.1:39911/test/spike.js?profile=google-earth"
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "profile": "mdn",
+      "kind": "site",
+      "label": "MDN (replica)",
+      "csp": "default-src https:; script-src 'self' 'wasm-unsafe-eval' https://*.mdnplay.dev; img-src * data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https:",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 17,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": true,
+          "ms": 18,
+          "detail": "module ready"
+        },
+        {
+          "step": "wabtParseWat",
+          "ok": true,
+          "ms": 10,
+          "detail": "34 bytes emitted"
+        },
+        {
+          "step": "wabtOutputInstantiate",
+          "ok": true,
+          "ms": 1,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": true,
+          "ms": 506,
+          "detail": "ESM module initialized (embedded wasm compiled)"
+        },
+        {
+          "step": "binaryenParseText",
+          "ok": true,
+          "ms": 34,
+          "detail": "34 bytes emitted, validate()=1"
+        },
+        {
+          "step": "binaryenOutputInstantiate",
+          "ok": true,
+          "ms": 1,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": true,
+          "ms": 5,
+          "detail": "getWabt() ok, toBinary 34 bytes"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": true,
+          "ms": 1,
+          "detail": "getBinaryen() ok, emitBinary 34 bytes"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": true,
+        "wabtParseWat": true,
+        "wabtOutputInstantiate": true,
+        "binaryenImport": true,
+        "binaryenParseText": true,
+        "binaryenOutputInstantiate": true,
+        "hookApiGetWabt": true,
+        "hookApiGetBinaryen": true
+      },
+      "wasMonkeyConsoleLines": 11,
+      "consoleParity": {
+        "collectLogs": 5,
+        "matchedInConsole": 5,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "discord",
+      "kind": "site",
+      "label": "Discord (replica)",
+      "csp": "default-src 'self'; script-src 'self' 'sha256-aaaa' 'sha256-bbbb' https://cdn.discordapp.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; img-src * data:; worker-src 'self' blob:",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 11,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": false,
+          "ms": 8,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' 'sha256-aaaa' 'sha256-bbbb' https://cdn.discordapp.com\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "binaryenImport",
+          "ok": false,
+          "ms": 461,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' 'sha256-aaaa' 'sha256-bbbb' https://cdn.discordapp.com\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": false,
+          "ms": 3,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' 'sha256-aaaa' 'sha256-bbbb' https://cdn.discordapp.com\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": false,
+          "ms": 0,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' 'sha256-aaaa' 'sha256-bbbb' https://cdn.discordapp.com\".). Build with -sASSERTIONS for more info."
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": false,
+        "binaryenImport": false,
+        "hookApiGetWabt": false,
+        "hookApiGetBinaryen": false
+      },
+      "wasMonkeyConsoleLines": 7,
+      "consoleParity": {
+        "collectLogs": 3,
+        "matchedInConsole": 3,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "google-meet",
+      "kind": "site",
+      "label": "Google Meet (replica)",
+      "csp": "script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; worker-src 'self' blob:; connect-src 'self' https: wss: data: blob:; img-src * data: blob:",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 12,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": true,
+          "ms": 11,
+          "detail": "module ready"
+        },
+        {
+          "step": "wabtParseWat",
+          "ok": true,
+          "ms": 6,
+          "detail": "34 bytes emitted"
+        },
+        {
+          "step": "wabtOutputInstantiate",
+          "ok": true,
+          "ms": 0,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": true,
+          "ms": 517,
+          "detail": "ESM module initialized (embedded wasm compiled)"
+        },
+        {
+          "step": "binaryenParseText",
+          "ok": true,
+          "ms": 35,
+          "detail": "34 bytes emitted, validate()=1"
+        },
+        {
+          "step": "binaryenOutputInstantiate",
+          "ok": true,
+          "ms": 0,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": true,
+          "ms": 6,
+          "detail": "getWabt() ok, toBinary 34 bytes"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": true,
+          "ms": 2,
+          "detail": "getBinaryen() ok, emitBinary 34 bytes"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": true,
+        "wabtParseWat": true,
+        "wabtOutputInstantiate": true,
+        "binaryenImport": true,
+        "binaryenParseText": true,
+        "binaryenOutputInstantiate": true,
+        "hookApiGetWabt": true,
+        "hookApiGetBinaryen": true
+      },
+      "wasMonkeyConsoleLines": 11,
+      "consoleParity": {
+        "collectLogs": 5,
+        "matchedInConsole": 5,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "crazygames",
+      "kind": "site",
+      "label": "CrazyGames (replica)",
+      "csp": null,
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 13,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": true,
+          "ms": 10,
+          "detail": "module ready"
+        },
+        {
+          "step": "wabtParseWat",
+          "ok": true,
+          "ms": 6,
+          "detail": "34 bytes emitted"
+        },
+        {
+          "step": "wabtOutputInstantiate",
+          "ok": true,
+          "ms": 0,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": true,
+          "ms": 505,
+          "detail": "ESM module initialized (embedded wasm compiled)"
+        },
+        {
+          "step": "binaryenParseText",
+          "ok": true,
+          "ms": 33,
+          "detail": "34 bytes emitted, validate()=1"
+        },
+        {
+          "step": "binaryenOutputInstantiate",
+          "ok": true,
+          "ms": 1,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": true,
+          "ms": 5,
+          "detail": "getWabt() ok, toBinary 34 bytes"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": true,
+          "ms": 1,
+          "detail": "getBinaryen() ok, emitBinary 34 bytes"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": true,
+        "wabtParseWat": true,
+        "wabtOutputInstantiate": true,
+        "binaryenImport": true,
+        "binaryenParseText": true,
+        "binaryenOutputInstantiate": true,
+        "hookApiGetWabt": true,
+        "hookApiGetBinaryen": true
+      },
+      "wasMonkeyConsoleLines": 11,
+      "consoleParity": {
+        "collectLogs": 5,
+        "matchedInConsole": 5,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "strict-no-eval",
+      "kind": "class",
+      "label": "strict: default-src 'self' (no eval sources)",
+      "csp": "default-src 'self'; object-src 'none'",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 10,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": false,
+          "ms": 9,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"default-src 'self'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "binaryenImport",
+          "ok": false,
+          "ms": 456,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"default-src 'self'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": false,
+          "ms": 2,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"default-src 'self'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": false,
+          "ms": 1,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"default-src 'self'\".). Build with -sASSERTIONS for more info."
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": false,
+        "binaryenImport": false,
+        "hookApiGetWabt": false,
+        "hookApiGetBinaryen": false
+      },
+      "wasMonkeyConsoleLines": 7,
+      "consoleParity": {
+        "collectLogs": 3,
+        "matchedInConsole": 3,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "wasm-unsafe-eval-only",
+      "kind": "class",
+      "label": "script-src 'self' 'wasm-unsafe-eval'",
+      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; object-src 'none'",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 12,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": true,
+          "ms": 10,
+          "detail": "module ready"
+        },
+        {
+          "step": "wabtParseWat",
+          "ok": true,
+          "ms": 6,
+          "detail": "34 bytes emitted"
+        },
+        {
+          "step": "wabtOutputInstantiate",
+          "ok": true,
+          "ms": 1,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": true,
+          "ms": 489,
+          "detail": "ESM module initialized (embedded wasm compiled)"
+        },
+        {
+          "step": "binaryenParseText",
+          "ok": true,
+          "ms": 34,
+          "detail": "34 bytes emitted, validate()=1"
+        },
+        {
+          "step": "binaryenOutputInstantiate",
+          "ok": true,
+          "ms": 0,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": true,
+          "ms": 5,
+          "detail": "getWabt() ok, toBinary 34 bytes"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": true,
+          "ms": 4,
+          "detail": "getBinaryen() ok, emitBinary 34 bytes"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": true,
+        "wabtParseWat": true,
+        "wabtOutputInstantiate": true,
+        "binaryenImport": true,
+        "binaryenParseText": true,
+        "binaryenOutputInstantiate": true,
+        "hookApiGetWabt": true,
+        "hookApiGetBinaryen": true
+      },
+      "wasMonkeyConsoleLines": 11,
+      "consoleParity": {
+        "collectLogs": 5,
+        "matchedInConsole": 5,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "unsafe-eval-only",
+      "kind": "class",
+      "label": "script-src 'self' 'unsafe-eval'",
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-eval'; object-src 'none'",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 13,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": true,
+          "ms": 11,
+          "detail": "module ready"
+        },
+        {
+          "step": "wabtParseWat",
+          "ok": true,
+          "ms": 5,
+          "detail": "34 bytes emitted"
+        },
+        {
+          "step": "wabtOutputInstantiate",
+          "ok": true,
+          "ms": 1,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": true,
+          "ms": 496,
+          "detail": "ESM module initialized (embedded wasm compiled)"
+        },
+        {
+          "step": "binaryenParseText",
+          "ok": true,
+          "ms": 35,
+          "detail": "34 bytes emitted, validate()=1"
+        },
+        {
+          "step": "binaryenOutputInstantiate",
+          "ok": true,
+          "ms": 0,
+          "detail": "f() = 42"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": true,
+          "ms": 8,
+          "detail": "getWabt() ok, toBinary 34 bytes"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": true,
+          "ms": 4,
+          "detail": "getBinaryen() ok, emitBinary 34 bytes"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": true,
+        "wabtParseWat": true,
+        "wabtOutputInstantiate": true,
+        "binaryenImport": true,
+        "binaryenParseText": true,
+        "binaryenOutputInstantiate": true,
+        "hookApiGetWabt": true,
+        "hookApiGetBinaryen": true
+      },
+      "wasMonkeyConsoleLines": 11,
+      "consoleParity": {
+        "collectLogs": 5,
+        "matchedInConsole": 5,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    },
+    {
+      "profile": "nonce-only",
+      "kind": "class",
+      "label": "script-src 'nonce-...' (strict, no inline/eval)",
+      "csp": "default-src 'self'; script-src 'nonce-<per-response-nonce>'; object-src 'none'; base-uri 'none'",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": false,
+          "ms": 2,
+          "error": "script load failed/blocked: /vendor/wabt/index.js"
+        },
+        {
+          "step": "wabtScriptLoadWithNonce",
+          "ok": true,
+          "ms": 10,
+          "detail": "nonce"
+        },
+        {
+          "step": "wabtInit",
+          "ok": false,
+          "ms": 8,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-a965ovpnqxmvj81o2b'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "binaryenImport",
+          "ok": false,
+          "ms": 474,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-a965ovpnqxmvj81o2b'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": false,
+          "ms": 2,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-a965ovpnqxmvj81o2b'\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": false,
+          "ms": 9,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'nonce-n-a965ovpnqxmvj81o2b'\".). Build with -sASSERTIONS for more info."
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": false,
+        "wabtScriptLoadWithNonce": true,
+        "wabtInit": false,
+        "binaryenImport": false,
+        "hookApiGetWabt": false,
+        "hookApiGetBinaryen": false
+      },
+      "wasMonkeyConsoleLines": 7,
+      "consoleParity": {
+        "collectLogs": 3,
+        "matchedInConsole": 3,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/vendor/wabt/index.js' violates the following Content Security Policy directive: \"script-src 'nonce-n-a965ovpnqxmvj81o2b'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
+          "url": "http://127.0.0.1:39911/test/spike.js?profile=nonce-only"
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "profile": "default-src-none",
+      "kind": "class",
+      "label": "default-src 'none'",
+      "csp": "default-src 'none'",
+      "stage": "cdp-fallback",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": false,
+          "ms": 2,
+          "error": "script load failed/blocked: /vendor/wabt/index.js"
+        },
+        {
+          "step": "wabtScriptLoadWithNonce",
+          "ok": false,
+          "ms": 1,
+          "error": "script load failed/blocked: /vendor/wabt/index.js"
+        },
+        {
+          "step": "binaryenImport",
+          "ok": false,
+          "ms": 1,
+          "error": "Failed to fetch dynamically imported module: http://127.0.0.1:39911/vendor/binaryen/index.js"
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": false,
+          "ms": 1,
+          "error": "wasMonkey: wabt vendor script blocked or missing"
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": false,
+          "ms": 0,
+          "error": "Failed to fetch dynamically imported module: http://127.0.0.1:39911/vendor/binaryen/index.js"
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": false,
+        "wabtScriptLoadWithNonce": false,
+        "binaryenImport": false,
+        "hookApiGetWabt": false,
+        "hookApiGetBinaryen": false
+      },
+      "wasMonkeyConsoleLines": 1,
+      "consoleParity": {
+        "collectLogs": 0,
+        "matchedInConsole": 0,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/test/spike.js?profile=default-src-none' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": "http://127.0.0.1:39911/spike/default-src-none"
+        },
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/vendor/wabt/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fuser%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+        },
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/vendor/wabt/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fuser%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+        },
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/vendor/binaryen/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": "pptr:evaluate;driveViaCdp%20(file%3A%2F%2F%2Fhome%2Fuser%2FwasMonkey%2Ftools%2Fphase0%2Fcdputil.mjs%3A160%3A14)"
+        },
+        {
+          "level": "error",
+          "source": "security",
+          "text": "Loading the script 'http://127.0.0.1:39911/vendor/wabt/index.js' violates the following Content Security Policy directive: \"default-src 'none'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked.",
+          "url": null
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "profile": "self-plus-cdn",
+      "kind": "class",
+      "label": "script-src 'self' https://cdn.example (typical SaaS)",
+      "csp": "default-src 'self'; script-src 'self' https://cdn.example; connect-src 'self' https:; img-src 'self' data:; worker-src 'self' blob:",
+      "stage": "spike-done",
+      "hookInstalled": true,
+      "steps": [
+        {
+          "step": "wabtScriptLoad",
+          "ok": true,
+          "ms": 10,
+          "detail": "plain"
+        },
+        {
+          "step": "wabtInit",
+          "ok": false,
+          "ms": 8,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' https://cdn.example\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "binaryenImport",
+          "ok": false,
+          "ms": 461,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' https://cdn.example\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetWabt",
+          "ok": false,
+          "ms": 2,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' https://cdn.example\".). Build with -sASSERTIONS for more info."
+        },
+        {
+          "step": "hookApiGetBinaryen",
+          "ok": false,
+          "ms": 1,
+          "error": "Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' https://cdn.example\".). Build with -sASSERTIONS for more info."
+        }
+      ],
+      "stepOk": {
+        "wabtScriptLoad": true,
+        "wabtInit": false,
+        "binaryenImport": false,
+        "hookApiGetWabt": false,
+        "hookApiGetBinaryen": false
+      },
+      "wasMonkeyConsoleLines": 7,
+      "consoleParity": {
+        "collectLogs": 3,
+        "matchedInConsole": 3,
+        "missed": [],
+        "ok": true
+      },
+      "cspViolations": [],
+      "pageErrors": []
+    }
+  ]
+}

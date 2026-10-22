@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-10-22T07:22:30.206Z",
+  "packages": [
+    {
+      "name": "binaryen",
+      "version": "132.0.0",
+      "tarball": "https://registry.npmjs.org/binaryen/-/binaryen-132.0.0.tgz",
+      "tarballSha256": "6543555fb29bb92548f325c7dc18e9ab7dbb1215edda25993d1e3f71d85b8618",
+      "browserNote": "ESM, top-level await, default export; single-file (embedded base64 WASM)",
+      "files": [
+        {
+          "from": "package/index.js",
+          "to": "vendor/binaryen/index.js",
+          "sha256": "5f0579abe5dddb48daa46a63933974eea085e0e1752b238d227315cf39d5fb06",
+          "bytes": 14844140
+        },
+        {
+          "from": "package/LICENSE",
+          "to": "vendor/binaryen/LICENSE",
+          "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+          "bytes": 11356
+        }
+      ]
+    },
+    {
+      "name": "wabt",
+      "version": "1.0.39",
+      "tarball": "https://registry.npmjs.org/wabt/-/wabt-1.0.39.tgz",
+      "tarballSha256": "a10d4f4b15b91de8ab2ccb4700ef12185736f0bc96ee809e53ab17f7ea743fd2",
+      "browserNote": "UMD classic script exposing global WabtModule factory; single-file (embedded base64 WASM)",
+      "files": [
+        {
+          "from": "package/index.js",
+          "to": "vendor/wabt/index.js",
+          "sha256": "cecf06ab5c65c3b7c05bafe601bbba61a45e4939889c5c51351e8817ac06f48d",
+          "bytes": 690700
+        },
+        {
+          "from": "package/LICENSE",
+          "to": "vendor/wabt/LICENSE",
+          "sha256": "1d2c1da880eb3805f6033e90d80205a8e44e826c5747ecf23853f4a33e909850",
+          "bytes": 11371
+        }
+      ]
+    }
+  ]
+}

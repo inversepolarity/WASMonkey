@@ -1,10 +1,16 @@
 {
   "manifest_version": 3,
   "name": "wasMonkey (prototype)",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Prototype: intercept and log WASM loads (Phase 0 feasibility).",
   "permissions": ["storage", "scripting"],
   "host_permissions": ["<all_urls>"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wasmonkey-prototype@inversepolarity.github.io",
+      "strict_min_version": "128.0"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -13,5 +19,10 @@
       "world": "MAIN"
     }
   ],
-  "web_accessible_resources": []
+  "web_accessible_resources": [
+    {
+      "resources": ["vendor/binaryen/index.js", "vendor/wabt/index.js", "src/page-hook.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
