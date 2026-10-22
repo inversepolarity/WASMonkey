@@ -112,5 +112,53 @@
   try { Object.defineProperty(InstanceWrapper, "name", { value: "Instance" }); } catch (e) {}
   WebAssembly.Instance = InstanceWrapper;
 
+  // --- transitional API surface (Phase 0 follow-up) -----------------------
+  // Base URL for web_accessible_resources when running as a real extension
+  // content script; null under CDP injection / plain pages, in which case
+  // vendor files resolve same-origin (the fixture server mirrors /vendor/).
+  try {
+    window.__wasMonkeyExtBaseURL =
+      typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function"
+        ? chrome.runtime.getURL("")
+        : null;
+  } catch (e) { window.__wasMonkeyExtBaseURL = null; }
+
+  // Lazy-load contract reserved for Phase 4/5 (docs/feasibility.md §7.6):
+  // getBinaryen() / getWabt() pull the vendored browser builds into the MAIN
+  // world on demand instead of at document_start.
+  var vendorP = {};
+  function vendorBase() {
+    return window.__wasMonkeyExtBaseURL || (location.origin ? location.origin + "/" : "/");
+  }
+  function getBinaryen() {
+    if (!vendorP.binaryen) {
+      vendorP.binaryen = import(vendorBase() + "vendor/binaryen/index.js")
+        .then(function (m) { return m.default || m; })
+        .catch(function (e) { vendorP.binaryen = null; throw e; });
+    }
+    return vendorP.binaryen;
+  }
+  function getWabt() {
+    if (!vendorP.wabt) {
+      vendorP.wabt = new Promise(function (resolve, reject) {
+        if (typeof window.WabtModule === "function") { resolve(window.WabtModule()); return; }
+        var s = document.createElement("script");
+        s.src = vendorBase() + "vendor/wabt/index.js";
+        s.onload = function () {
+          try { resolve(window.WabtModule()); } catch (e) { reject(e); }
+        };
+        s.onerror = function () { reject(new Error("wasMonkey: wabt vendor script blocked or missing")); };
+        (document.head || document.documentElement).appendChild(s);
+      }).catch(function (e) { vendorP.wabt = null; throw e; });
+    }
+    return vendorP.wabt;
+  }
+  window.__wasMonkey = {
+    version: "0.0.2",
+    getBinaryen: getBinaryen,
+    getWabt: getWabt,
+    get logs() { return window.__wasMonkeyLogs || []; },
+  };
+
   console.log(TAG + " hook installed (page-hook.js)");
 })();

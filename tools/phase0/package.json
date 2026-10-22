@@ -1,0 +1,24 @@
+{
+  "name": "wasmonkey-phase0-tools",
+  "version": "1.0.0",
+  "description": "Phase 0 follow-up tooling: browser provisioning, CSP fixture server, interception matrix, Binaryen/wabt spike",
+  "main": "index.js",
+  "scripts": {
+    "smoke": "node smoke.mjs",
+    "matrix": "node matrix.mjs",
+    "spike": "node spike.mjs",
+    "vendor": "node vendor.mjs",
+    "setup": "node browser.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "binaryen": "^132.0.0",
+    "puppeteer-core": "^25.15.0",
+    "wabt": "^1.0.39",
+    "web-ext": "^10.8.0"
+  },
+  "private": true,
+  "type": "module"
+}
